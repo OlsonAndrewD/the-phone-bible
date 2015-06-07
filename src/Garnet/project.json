@@ -1,0 +1,39 @@
+﻿{
+    "webroot": "wwwroot",
+    "version": "1.0.0-*",
+
+    "dependencies": {
+        "Garnet.Services": "1.0.0-*",
+        "Microsoft.AspNet.Mvc": "6.0.0-beta4",
+        "Microsoft.AspNet.Server.IIS": "1.0.0-beta4",
+        "Microsoft.AspNet.Server.WebListener": "1.0.0-beta4",
+        "Microsoft.AspNet.StaticFiles": "1.0.0-beta4",
+        "Microsoft.Framework.ConfigurationModel": "1.0.0-beta4",
+        "Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta4",
+        "Microsoft.Framework.Logging.Console": "1.0.0-beta4",
+        "Twilio": "4.0.3",
+        "Twilio.TwiML": "3.3.6",
+        "Twilio.Mvc": "3.1.15"
+    },
+
+    "commands": {
+        "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000"
+    },
+
+    "frameworks": {
+        "dnx451": { }
+    },
+
+    "exclude": [
+        "wwwroot",
+        "node_modules",
+        "bower_components"
+    ],
+    "publishExclude": [
+        "node_modules",
+        "bower_components",
+        "**.xproj",
+        "**.user",
+        "**.vspscc"
+    ]
+}

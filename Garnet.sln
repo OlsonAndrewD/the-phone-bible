@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{81842889-F0C8-4656-B5B0-A30332A89338}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BE873AEB-D44D-4102-BACB-21935F4E8382}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Garnet.Api", "src\Garnet\Garnet.Api.xproj", "{8984314A-0238-4379-9926-24646D00AE7F}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Garnet.Services", "src\Garnet.Services\Garnet.Services.xproj", "{A2A72231-A392-4BA0-9BB6-34E22560601B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8984314A-0238-4379-9926-24646D00AE7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8984314A-0238-4379-9926-24646D00AE7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8984314A-0238-4379-9926-24646D00AE7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8984314A-0238-4379-9926-24646D00AE7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2A72231-A392-4BA0-9BB6-34E22560601B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2A72231-A392-4BA0-9BB6-34E22560601B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2A72231-A392-4BA0-9BB6-34E22560601B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2A72231-A392-4BA0-9BB6-34E22560601B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8984314A-0238-4379-9926-24646D00AE7F} = {81842889-F0C8-4656-B5B0-A30332A89338}
+		{A2A72231-A392-4BA0-9BB6-34E22560601B} = {81842889-F0C8-4656-B5B0-A30332A89338}
+	EndGlobalSection
+EndGlobal
