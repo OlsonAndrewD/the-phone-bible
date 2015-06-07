@@ -1,4 +1,6 @@
-﻿using Microsoft.Framework.DependencyInjection;
+﻿using Garnet.Services.Implementations;
+using Garnet.Services.Interfaces;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Garnet.Services
 {
@@ -6,7 +8,7 @@ namespace Garnet.Services
     {
         public static void ConfigureApplicationServices(this IServiceCollection services)
         {
-            //services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<IContentService, ContentService>();
         }
     }
 }
