@@ -20,8 +20,32 @@ namespace Garnet.Api.Controllers
         private static class Routes
         {
             public const string Root = "api/twilio/voice";
+            public const string Start = "start";
             public const string CurrentContent = "current-content";
             public const string MainMenu = "main-menu";
+        }
+
+        [Route(Routes.Start)]
+        [HttpGet]
+        public IActionResult Start()
+        {
+            return TwilioResponseResult(x =>
+            {
+                x.BeginGather(new { action = Routes.MainMenu, timeout = 2 });
+                x.Say("For main menu, press pound anytime.");
+                x.EndGather();
+                x.Redirect(Routes.CurrentContent, "get");
+            });
+        }
+
+        [Route(Routes.Start)]
+        [HttpPost]
+        public IActionResult HandleStartInput([FromForm(Name = "Digits")] string digits)
+        {
+            return TwilioResponseResult(x =>
+            {
+                x.Redirect(digits == "#" ? Routes.MainMenu : Routes.CurrentContent, "get");
+            });
         }
 
         [Route(Routes.CurrentContent)]
@@ -32,7 +56,6 @@ namespace Garnet.Api.Controllers
             return TwilioResponseResult(x =>
             {
                 x.BeginGather(new { action = Routes.MainMenu, timeout = 2 });
-                x.Say("For main menu, press pound anytime.");
                 x.Play(_contentService.GetContentUrl(user.CurrentContentSectionId));
                 x.EndGather();
                 x.Redirect(Routes.MainMenu, "get");
@@ -45,7 +68,7 @@ namespace Garnet.Api.Controllers
         {
             return TwilioResponseResult(x =>
             {
-                x.BeginGather();
+                x.BeginGather(new { numDigits = 1 });
                 x.Say("Press 1 to hear the current section.");
                 x.Say("Press 2 to go to the next section.");
                 x.EndGather();
@@ -71,7 +94,11 @@ namespace Garnet.Api.Controllers
 
             if (redirectToContent)
             {
-                return TwilioResponseResult(x => x.Redirect(Routes.CurrentContent, "get"));
+                return TwilioResponseResult(x =>
+                {
+                    x.Say("One moment please.");
+                    x.Redirect(Routes.CurrentContent, "get");
+                });
             }
 
             return TwilioResponseResult(x => x.Redirect(Routes.MainMenu, "get"));
