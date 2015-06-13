@@ -1,4 +1,5 @@
 ﻿using Garnet.Domain.Services;
+using Garnet.Services.BibleContent;
 using Microsoft.Framework.DependencyInjection;
 
 namespace Garnet.Services

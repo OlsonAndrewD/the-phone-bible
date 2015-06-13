@@ -1,13 +1,9 @@
 ﻿using Garnet.Api.ActionResults;
 using Garnet.Api.TwilioRequestHandlers;
-using Garnet.Domain.Entities;
 using Garnet.Domain.Services;
 using Microsoft.AspNet.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using Twilio.TwiML;
+using System.Threading.Tasks;
 
 namespace Garnet.Api.Controllers
 {
@@ -17,14 +13,14 @@ namespace Garnet.Api.Controllers
         private readonly IUserService _userService;
         private readonly IContentService _contentService;
         private readonly MainMenu _mainMenu;
-        private readonly BrowserServiceLocator _browserServiceLocator;
+        private readonly IBrowserFactory _browserFactory;
 
-        public TwilioVoiceController(IUserService userService, IContentService contentService, MainMenu mainMenu, BrowserServiceLocator browserServiceLocator)
+        public TwilioVoiceController(IUserService userService, IContentService contentService, MainMenu mainMenu, IBrowserFactory browserFactory)
         {
             _userService = userService;
             _contentService = contentService;
             _mainMenu = mainMenu;
-            _browserServiceLocator = browserServiceLocator;
+            _browserFactory = browserFactory;
         }
 
         [Route(Routes.Start)]
@@ -49,13 +45,15 @@ namespace Garnet.Api.Controllers
 
         [Route(Routes.CurrentContent)]
         [HttpGet]
-        public IActionResult GetCurrentContent([FromQuery(Name = "From")] string fromPhoneNumber)
+        public async Task<IActionResult> GetCurrentContent([FromQuery(Name = "From")] string fromPhoneNumber)
         {
             var user = _userService.GetOrCreate(fromPhoneNumber);
+            var contentUrl = await _contentService.GetContentUrlAsync(user.CurrentChapter);
+
             return new TwilioResponseResult(x =>
             {
                 x.BeginGather(new { action = Routes.MainMenu, timeout = 2 });
-                x.Play(_contentService.GetContentUrl(user.CurrentChapter));
+                x.Play(contentUrl);
                 x.EndGather();
                 x.Redirect(Routes.MainMenu, "get");
             });
@@ -79,9 +77,15 @@ namespace Garnet.Api.Controllers
 
         [Route(Routes.Browse)]
         [HttpGet]
-        public IActionResult Browse([FromQuery] string sectionOrGroupName)
+        public IActionResult Browse([FromQuery] string bookOrGroupName)
         {
-            return _browserServiceLocator.GetBrowser(sectionOrGroupName).PromptForSelection();
+            var browser = CreateBrowser(bookOrGroupName);
+            if (browser != null)
+            {
+                return browser.PromptForSelection();
+            }
+
+            return new TwilioRedirectResult(Routes.MainMenu);
         }
 
         [Route(Routes.Browse)]
@@ -89,16 +93,38 @@ namespace Garnet.Api.Controllers
         public IActionResult HandleBrowseSelection(
             [FromForm(Name = "From")] string fromPhoneNumber,
             [FromForm(Name = "Digits")] string selection,
-            [FromQuery] string sectionOrGroupName)
+            [FromQuery] string bookOrGroupName)
         {
-            return _browserServiceLocator.GetBrowser(sectionOrGroupName)
-                .HandleSelection(fromPhoneNumber, selection);
+            var browser = CreateBrowser(bookOrGroupName);
+            if (browser != null)
+            {
+                return browser.HandleSelection(fromPhoneNumber, selection);
+            }
+
+            return new TwilioRedirectResult(Routes.MainMenu);
         }
 
-        internal static string GetBrowseUrl(string sectionOrGroupName)
+        internal static string GetBrowseUrl(string bookOrGroupName)
         {
             return string.Concat(
-                Routes.Browse, "?sectionOrGroupName=", WebUtility.UrlEncode(sectionOrGroupName));
+                Routes.Browse, "?bookOrGroupName=", WebUtility.UrlEncode(bookOrGroupName));
+        }
+
+        private IBrowser CreateBrowser(string bookOrGroupName)
+        {
+            var book = _contentService.GetBook(bookOrGroupName);
+            if (book != null)
+            {
+                return _browserFactory.CreateBookBrowser(book);
+            }
+
+            var group = _contentService.GetGroup(bookOrGroupName);
+            if (group != null)
+            {
+                return _browserFactory.CreateGroupBrowser(group);
+            }
+
+            return null;
         }
     }
 }

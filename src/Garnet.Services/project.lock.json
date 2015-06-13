@@ -4,7 +4,8 @@
   "projectFileDependencyGroups": {
     "": [
       "Microsoft.Framework.DependencyInjection.Interfaces >= 1.0.0-beta4",
-      "Garnet.Domain >= 1.0.0-*"
+      "Garnet.Domain >= 1.0.0-*",
+      "RestSharp >= 105.1.0"
     ],
     "DNX,Version=v4.5.1": []
   },
@@ -59,6 +60,58 @@
         "lib/net45/Microsoft.Framework.DependencyInjection.Interfaces.xml",
         "lib/portable-net451+win81+wpa81/Microsoft.Framework.DependencyInjection.Interfaces.dll",
         "lib/portable-net451+win81+wpa81/Microsoft.Framework.DependencyInjection.Interfaces.xml"
+      ]
+    },
+    "RestSharp/105.1.0": {
+      "serviceable": false,
+      "sha": "2DRH1cpTOJwesBOwQ0cIhVHUmupbRKt+tdSatfdvndvsawsGMIEgrbq8yv6g3GM1MRVcb37bT8LACVFsqITDmg==",
+      "frameworks": {
+        "DNX,Version=v4.5.1": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/net452/RestSharp.dll"
+          ],
+          "compileAssemblies": [
+            "lib/net452/RestSharp.dll"
+          ]
+        },
+        "DNXCore,Version=v5.0": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [],
+          "compileAssemblies": []
+        }
+      },
+      "files": [
+        "readme.txt",
+        "RestSharp.105.1.0.nupkg",
+        "RestSharp.105.1.0.nupkg.sha512",
+        "RestSharp.nuspec",
+        "lib/net35/RestSharp.dll",
+        "lib/net35/RestSharp.xml",
+        "lib/net35-client/RestSharp.dll",
+        "lib/net35-client/RestSharp.xml",
+        "lib/net4/RestSharp.dll",
+        "lib/net4/RestSharp.xml",
+        "lib/net4-client/RestSharp.dll",
+        "lib/net4-client/RestSharp.xml",
+        "lib/net45/RestSharp.dll",
+        "lib/net45/RestSharp.xml",
+        "lib/net45-client/RestSharp.dll",
+        "lib/net45-client/RestSharp.xml",
+        "lib/net451/RestSharp.dll",
+        "lib/net451/RestSharp.xml",
+        "lib/net451-client/RestSharp.dll",
+        "lib/net451-client/RestSharp.xml",
+        "lib/net452/RestSharp.dll",
+        "lib/net452/RestSharp.xml",
+        "lib/net452-client/RestSharp.dll",
+        "lib/net452-client/RestSharp.xml",
+        "lib/sl4/RestSharp.Silverlight.dll",
+        "lib/sl4/RestSharp.Silverlight.xml",
+        "lib/windowsphone8/RestSharp.WindowsPhone.dll",
+        "lib/windowsphone8/RestSharp.WindowsPhone.xml"
       ]
     }
   }

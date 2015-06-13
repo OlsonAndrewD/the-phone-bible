@@ -1,5 +1,4 @@
-﻿using System;
-using Garnet.Domain.Entities;
+﻿using Garnet.Domain.Entities;
 using Garnet.Domain.Services;
 using System.Collections.Concurrent;
 

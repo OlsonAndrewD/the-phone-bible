@@ -1,19 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Garnet.Api.ActionResults;
 using Twilio.TwiML;
 using Garnet.Api.Controllers;
+using Garnet.Domain.Entities;
 
 namespace Garnet.Api.TwilioRequestHandlers
 {
-    public abstract class GroupBrowser : Browser
+    public class GroupBrowser : Browser
     {
         private ICollection<string> _options;
+        private readonly BookGroup _bookGroup;
 
-        public GroupBrowser(IEnumerable<string> options)
+        public GroupBrowser(BookGroup bookGroup, IEnumerable<string> optionsInGroup)
         {
-            _options = options.ToList();
+            _bookGroup = bookGroup;
+            _options = optionsInGroup.ToList();
+        }
+
+        protected override string Name
+        {
+            get { return _bookGroup.Name; }
+        }
+
+        protected override string ParentName
+        {
+            get { return _bookGroup.Parent == null ? null : _bookGroup.Parent.Name; }
         }
 
         protected override int NumberOfOptions
@@ -32,7 +44,7 @@ namespace Garnet.Api.TwilioRequestHandlers
 
         protected override TwilioResponseResult HandleSelectionInternal(string phoneNumber, string selection)
         {
-            var newGroupName = GroupName;
+            var newGroupName = Name;
 
             int selectedOptionNumber;
             if (int.TryParse(selection, out selectedOptionNumber))

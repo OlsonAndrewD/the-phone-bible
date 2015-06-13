@@ -1,16 +1,17 @@
 ﻿using Garnet.Domain.Entities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Garnet.Domain.Services
 {
     public interface IContentService
     {
-        string SectionDescriptor { get; }
         Chapter GetDefaultChapter();
-        string GetContentUrl(Chapter chapter);
+        Task<string> GetContentUrlAsync(Chapter chapter);
         Chapter GetChapterAfter(Chapter chapter);
-        //SectionGroup GetGroup(string groupName);
-        //IEnumerable<SectionGroup> GetChildGroups(string parentGroupName);
-        //IEnumerable<Section> GetSectionsInGroup(string groupName);
+        Book GetBook(string bookName);
+        BookGroup GetGroup(string groupName);
+        IEnumerable<BookGroup> GetChildGroups(string parentGroupName);
+        IEnumerable<Book> GetBooks(string groupName = null);
     }
 }

@@ -1,15 +1,14 @@
 ﻿using Garnet.Api.ActionResults;
 using Garnet.Api.Controllers;
-using Garnet.Domain.Services;
 using System;
 using Twilio.TwiML;
 
 namespace Garnet.Api.TwilioRequestHandlers
 {
-    public abstract class Browser
+    public abstract class Browser : IBrowser
     {
-        protected abstract string GroupName { get; }
-        protected abstract string ParentGroupName { get; }
+        protected abstract string Name { get; }
+        protected abstract string ParentName { get; }
         protected abstract int NumberOfOptions { get; }
 
         protected abstract void PromptForSelectionInternal(TwilioResponse response);
@@ -17,19 +16,22 @@ namespace Garnet.Api.TwilioRequestHandlers
 
         public TwilioResponseResult PromptForSelection()
         {
-            var numDigits = Convert.ToInt32(Math.Floor(Math.Log10(NumberOfOptions))) + 1;
+            var numDigits = NumberOfOptions == 0 ?
+                0 :
+                Convert.ToInt32(Math.Floor(Math.Log10(NumberOfOptions))) + 1;
+
             return new TwilioResponseResult(response =>
             {
                 response.BeginGather(new
                 {
-                    action = TwilioVoiceController.GetBrowseUrl(GroupName),
+                    action = TwilioVoiceController.GetBrowseUrl(Name),
                     numDigits = numDigits,
                     timeout = 4
                 });
 
                 PromptForSelectionInternal(response);
 
-                if (ParentGroupName != null)
+                if (ParentName != null)
                 {
                     response.Say("Press 0 to go back.");
                 }
@@ -49,7 +51,7 @@ namespace Garnet.Api.TwilioRequestHandlers
 
             if (selection == "0")
             {
-                return new TwilioRedirectResult(TwilioVoiceController.GetBrowseUrl(ParentGroupName));
+                return new TwilioRedirectResult(TwilioVoiceController.GetBrowseUrl(ParentName));
             }
 
             return HandleSelectionInternal(phoneNumber, selection);
