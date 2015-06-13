@@ -16,6 +16,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Garnet.Services", "src\Garn
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Garnet.Domain", "src\Garnet.Domain\Garnet.Domain.xproj", "{0A5714DA-6E5B-4DD4-BDBF-2F9B5229977A}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Garnet.DataAccess", "src\Garnet.Data\Garnet.DataAccess.xproj", "{63D0DC60-5694-48EF-87B0-0E4249105C57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{0A5714DA-6E5B-4DD4-BDBF-2F9B5229977A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A5714DA-6E5B-4DD4-BDBF-2F9B5229977A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A5714DA-6E5B-4DD4-BDBF-2F9B5229977A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63D0DC60-5694-48EF-87B0-0E4249105C57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63D0DC60-5694-48EF-87B0-0E4249105C57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63D0DC60-5694-48EF-87B0-0E4249105C57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63D0DC60-5694-48EF-87B0-0E4249105C57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,5 +48,6 @@ Global
 		{8984314A-0238-4379-9926-24646D00AE7F} = {81842889-F0C8-4656-B5B0-A30332A89338}
 		{A2A72231-A392-4BA0-9BB6-34E22560601B} = {81842889-F0C8-4656-B5B0-A30332A89338}
 		{0A5714DA-6E5B-4DD4-BDBF-2F9B5229977A} = {81842889-F0C8-4656-B5B0-A30332A89338}
+		{63D0DC60-5694-48EF-87B0-0E4249105C57} = {81842889-F0C8-4656-B5B0-A30332A89338}
 	EndGlobalSection
 EndGlobal

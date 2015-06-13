@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0-*",
+    "description": "",
+    "authors": [ "" ],
+    "tags": [ "" ],
+    "projectUrl": "",
+    "licenseUrl": "",
+
+    "dependencies": {
+        "WindowsAzure.Storage": "4.3.0",
+        "Garnet.Domain": "1.0.0-*"
+    },
+
+    "frameworks": {
+        "dnx451": { }
+    }
+}

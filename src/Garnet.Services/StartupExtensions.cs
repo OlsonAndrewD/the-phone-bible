@@ -7,7 +7,7 @@ namespace Garnet.Services
     {
         public static void ConfigureApplicationServices(this IServiceCollection services)
         {
-            services.AddTransient<IContentService, ContentService>();
+            services.AddTransient<IContentService, EsvBibleContentService>();
             services.AddTransient<IUserService, UserService>();
         }
     }
