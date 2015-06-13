@@ -2,7 +2,7 @@
 {
     public class Chapter
     {
-        public string BookName { get; set; }
+        public Book Book { get; set; }
         public int ChapterNumber { get; set; }
     }
 }

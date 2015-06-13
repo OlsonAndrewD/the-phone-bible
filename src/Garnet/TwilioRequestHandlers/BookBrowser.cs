@@ -48,7 +48,7 @@ namespace Garnet.Api.TwilioRequestHandlers
                 {
                     user.CurrentChapter = new Chapter
                     {
-                        BookName = _book.Name,
+                        Book = _book,
                         ChapterNumber = int.Parse(selection)
                     };
                     _userService.AddOrUpdate(user);

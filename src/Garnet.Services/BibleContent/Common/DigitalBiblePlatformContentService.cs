@@ -58,7 +58,7 @@ namespace Garnet.Services.BibleContent.Common
             var restClient = CreateDbtRestClient();
             var request = new RestRequest("path");
             request.AddParameter("dam_id", GetDamId(chapter));
-            request.AddParameter("book_id", chapter.BookName);
+            request.AddParameter("book_id", chapter.Book.DbpId);
             request.AddParameter("chapter_id", chapter.ChapterNumber);
 
             var response = await restClient.ExecuteGetTaskAsync<List<AudioPath>>(request);
@@ -105,7 +105,7 @@ namespace Garnet.Services.BibleContent.Common
 
         private char GetCollectionId(Chapter chapter)
         {
-            return GetCollectionId(GetBook(chapter.BookName).Group);
+            return GetCollectionId(chapter.Book.Group);
         }
 
         private char GetCollectionId(BookGroup group)
