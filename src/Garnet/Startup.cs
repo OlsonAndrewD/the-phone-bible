@@ -14,10 +14,11 @@ namespace Garnet.Api
 
         public Startup(IHostingEnvironment env)
         {
-            var configuration = new Configuration()/*
-                .AddJsonFile("config.json")
+            var configuration = new Configuration()
+                //.AddJsonFile("config.json")
                 .AddJsonFile("secrets.json", optional: true)
-                .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)*/;
+                //.AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
+                ;
 
             //if (env.IsEnvironment("Development"))
             //{
@@ -37,8 +38,9 @@ namespace Garnet.Api
             services.AddMvc();
 
             services.AddTransient<MainMenu>();
-            services.ConfigureBrowserServices();
-            services.ConfigureApplicationServices();
+            services.AddTransient<IBrowserFactory, BrowserFactory>();
+
+            services.ConfigureApplicationServices(_configuration.Get("DigitalBiblePlatform:ApiKey"));
             //services.ConfigureApplicationDataAccess(_configuration);
         }
 

@@ -162,6 +162,18 @@ namespace Garnet.Services
                 NumberOfChapters = 16,
                 Group = GospelsAndActs,
             },
+            new Book
+            {
+                Name = "Luke",
+                NumberOfChapters = 24,
+                Group = GospelsAndActs,
+            },
+            new Book
+            {
+                Name = "John",
+                NumberOfChapters = 21,
+                Group = GospelsAndActs,
+            },
         };
     }
 }

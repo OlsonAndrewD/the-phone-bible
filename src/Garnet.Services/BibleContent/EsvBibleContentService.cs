@@ -6,32 +6,23 @@ namespace Garnet.Services.BibleContent
 {
     public class EsvBibleContentService : DigitalBiblePlatformContentService, IContentService
     {
-        public EsvBibleContentService() : base("")
+        public EsvBibleContentService(string apiKey) : base(apiKey)
         {
         }
 
         protected override bool IsDramaType
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return true; }
         }
 
         protected override string LanguageCode
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return "ENG"; }
         }
 
         protected override string VersionCode
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return "ESV"; }
         }
     }
 }

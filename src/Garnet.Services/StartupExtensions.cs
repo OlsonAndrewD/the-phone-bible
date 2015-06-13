@@ -6,9 +6,10 @@ namespace Garnet.Services
 {
     public static class StartupExtensions
     {
-        public static void ConfigureApplicationServices(this IServiceCollection services)
+        public static void ConfigureApplicationServices(this IServiceCollection services, string digitalBiblePlatformApiKey)
         {
-            services.AddTransient<IContentService, EsvBibleContentService>();
+            services.AddTransient<IContentService>(serviceProvider =>
+                new EsvBibleContentService(digitalBiblePlatformApiKey));
             services.AddTransient<IUserService, UserService>();
         }
     }
