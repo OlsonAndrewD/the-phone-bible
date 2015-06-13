@@ -9,7 +9,7 @@ namespace Garnet.Services
         public static void ConfigureApplicationServices(this IServiceCollection services, string digitalBiblePlatformApiKey)
         {
             services.AddTransient<IContentService>(serviceProvider =>
-                new EsvBibleContentService(digitalBiblePlatformApiKey));
+                new KjvBibleContentService(digitalBiblePlatformApiKey));
             services.AddTransient<IUserService, UserService>();
         }
     }
