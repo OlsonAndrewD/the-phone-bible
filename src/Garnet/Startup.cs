@@ -4,6 +4,7 @@ using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Garnet.Services;
+using Garnet.Api.TwilioRequestHandlers;
 
 namespace Garnet.Api
 {
@@ -35,6 +36,8 @@ namespace Garnet.Api
         {
             services.AddMvc();
 
+            services.AddTransient<MainMenu>();
+            services.ConfigureBrowserServices();
             services.ConfigureApplicationServices();
             //services.ConfigureApplicationDataAccess(_configuration);
         }

@@ -25,7 +25,7 @@ namespace Garnet.Services
             return _userStore.GetOrAdd(id, x => new User
             {
                 Id = id,
-                CurrentSectionId = _contentService.GetDefaultSectionId()
+                CurrentChapter = _contentService.GetDefaultChapter()
             });
         }
 
@@ -33,7 +33,7 @@ namespace Garnet.Services
         {
             return _userStore.AddOrUpdate(user.Id, user, (id, existing) =>
             {
-                existing.CurrentSectionId = user.CurrentSectionId;
+                existing.CurrentChapter = user.CurrentChapter;
                 return existing;
             });
         }
