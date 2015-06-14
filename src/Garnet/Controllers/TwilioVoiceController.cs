@@ -49,12 +49,21 @@ namespace Garnet.Api.Controllers
         public async Task<IActionResult> GetCurrentContent([FromQuery(Name = "From")] string fromPhoneNumber)
         {
             var user = _userService.GetOrCreate(fromPhoneNumber);
-            var contentUrl = await _contentService.GetContentUrlAsync(user.CurrentChapter);
+
+            var getContentUrlTask = _contentService.GetContentUrlAsync(user.CurrentChapter);
+            var getCopyrightInfoTask = _contentService.GetCopyrightInfoAsync(user.CurrentChapter);
+
+            var contentUrl = await getContentUrlTask;
+            var copyrightInfo = await getCopyrightInfoTask;
 
             return new TwilioResponseResult(x =>
             {
                 x.BeginGather(new { action = Routes.MainMenu, timeout = 2 });
                 x.Play(contentUrl);
+                if (!string.IsNullOrEmpty(copyrightInfo))
+                {
+                    x.AliceSay(string.Concat("Copyright: ", copyrightInfo));
+                }
                 x.EndGather();
                 x.Redirect(Routes.MainMenu, "get");
             });

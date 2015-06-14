@@ -6,8 +6,10 @@ namespace Garnet.Domain.Services
 {
     public interface IContentService
     {
-        Chapter GetDefaultChapter();
         Task<string> GetContentUrlAsync(Chapter chapter);
+        Task<string> GetCopyrightInfoAsync(Chapter chapter);
+
+        Chapter GetDefaultChapter();
         Chapter GetChapterAfter(Chapter chapter);
         Book GetBook(string bookName);
         BookGroup GetGroup(string groupName);

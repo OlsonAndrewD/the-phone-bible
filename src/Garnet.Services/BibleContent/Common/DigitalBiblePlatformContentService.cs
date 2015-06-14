@@ -32,11 +32,48 @@ namespace Garnet.Services.BibleContent.Common
                 .ContinueWith(x => string.Join("/", x.Result));
         }
 
+        public async Task<string> GetCopyrightInfoAsync(Chapter chapter)
+        {
+            var restClient = CreateDbtRestClient();
+            var request = new RestRequest("library/metadata");
+            request.AddParameter("dam_id", GetDamId(chapter));
+
+            var response = await restClient.ExecuteGetTaskAsync<List<CopyrightInfo>>(request);
+            var copyrightInfo = response.Data.FirstOrDefault();
+
+            string text = null;
+            if (copyrightInfo != null)
+            {
+                text = copyrightInfo.Mark;
+                if (string.IsNullOrEmpty(text))
+                {
+                    var holder = copyrightInfo.Organization.FirstOrDefault(x => x.OrganizationRole == "holder");
+                    if (holder != null)
+                    {
+                        text = holder.Organization;
+                    }
+                }
+            }
+            return text;
+        }
+
+        public class CopyrightInfo
+        {
+            public string Mark { get; set; }
+            public List<OrganizationInfo> Organization { get; set; }
+
+            public class OrganizationInfo
+            {
+                public string OrganizationRole { get; set; }
+                public string Organization { get; set; }
+            }
+        }
+
         private async Task<string> GetBaseAudioUrl()
         {
             var restClient = CreateDbtRestClient();
 
-            var response = await restClient.ExecuteGetTaskAsync<List<AudioLocation>>(new RestRequest("location"));
+            var response = await restClient.ExecuteGetTaskAsync<List<AudioLocation>>(new RestRequest("audio/location"));
             var location = response.Data.OrderBy(x => x.Priority).FirstOrDefault();
 
             if (location == null)
@@ -56,7 +93,7 @@ namespace Garnet.Services.BibleContent.Common
         private async Task<string> GetAudioUrl(Chapter chapter)
         {
             var restClient = CreateDbtRestClient();
-            var request = new RestRequest("path");
+            var request = new RestRequest("audio/path");
             request.AddParameter("dam_id", GetDamId(chapter));
             request.AddParameter("book_id", chapter.Book.DbpId);
             request.AddParameter("chapter_id", chapter.ChapterNumber);
@@ -84,7 +121,7 @@ namespace Garnet.Services.BibleContent.Common
 
         private RestClient CreateDbtRestClient()
         {
-            var restClient = new RestClient("http://dbt.io/audio/");
+            var restClient = new RestClient("http://dbt.io/");
             restClient.AddDefaultParameter("key", _apiKey);
             restClient.AddDefaultParameter("v", ApiVersion);
             return restClient;
