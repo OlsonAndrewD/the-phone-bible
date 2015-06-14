@@ -4,7 +4,7 @@ namespace Garnet.Api
 {
     public interface IBrowser
     {
-        TwilioResponseResult PromptForSelection();
+        TwilioResponseResult HandleBrowse(string phoneNumber, bool navigatingUp);
         TwilioResponseResult HandleSelection(string phoneNumber, string selection);
     }
 }

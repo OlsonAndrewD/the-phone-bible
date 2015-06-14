@@ -3,6 +3,7 @@ using Twilio.TwiML;
 using Garnet.Domain.Services;
 using Garnet.Domain.Entities;
 using Garnet.Domain.Extensions;
+using System;
 
 namespace Garnet.Api.TwilioRequestHandlers
 {
@@ -35,7 +36,7 @@ namespace Garnet.Api.TwilioRequestHandlers
             get { return _book.NumberOfChapters; }
         }
 
-        protected override void PromptForSelectionInternal(TwilioResponse response)
+        protected override void HandleBrowseInternal(TwilioResponse response)
         {
             response.Say(string.Concat("Enter a chapter number between 1 and ", _book.NumberOfChapters, "."));
         }

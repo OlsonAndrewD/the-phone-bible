@@ -79,12 +79,13 @@ namespace Garnet.Api.Controllers
         [HttpGet]
         public IActionResult Browse(
             [FromQuery(Name = "From")] string phoneNumber, 
-            [FromQuery] string bookOrGroupName)
+            [FromQuery] string bookOrGroupName,
+            [FromQuery] bool navigatingUp = false)
         {
             var browser = CreateBrowser(phoneNumber, bookOrGroupName);
             if (browser != null)
             {
-                return browser.PromptForSelection();
+                return browser.HandleBrowse(phoneNumber, navigatingUp);
             }
 
             return new TwilioRedirectResult(Routes.MainMenu);
@@ -106,10 +107,17 @@ namespace Garnet.Api.Controllers
             return new TwilioRedirectResult(Routes.MainMenu);
         }
 
-        internal static string GetBrowseUrl(string bookOrGroupName)
+        internal static string GetBrowseUrl(string bookOrGroupName, bool navigatingUp = false)
         {
-            return string.Concat(
+            var url = string.Concat(
                 Routes.Browse, "?bookOrGroupName=", WebUtility.UrlEncode(bookOrGroupName));
+
+            if (navigatingUp)
+            {
+                url = string.Concat(url, "&navigatingUp=true");
+            }
+
+            return url;
         }
 
         private IBrowser CreateBrowser(string phoneNumber, string bookOrGroupName)
@@ -119,7 +127,14 @@ namespace Garnet.Api.Controllers
                 var user = _userService.Get(phoneNumber);
                 if (user != null)
                 {
-                    return _browserFactory.CreateBookBrowser(user.CurrentChapter.Book);
+                    if (user.CurrentChapter.Book.NumberOfChapters == 1)
+                    {
+                        return _browserFactory.CreateGroupBrowser(user.CurrentChapter.Book.Group);
+                    }
+                    else
+                    {
+                        return _browserFactory.CreateBookBrowser(user.CurrentChapter.Book);
+                    }
                 }
             }
 

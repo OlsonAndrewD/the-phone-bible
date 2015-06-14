@@ -71,7 +71,7 @@ namespace Garnet.Services
             }
         }
 
-        protected static readonly BookGroup EntireBible = new BookGroup { Name = "Entire Bible" };
+        protected static readonly BookGroup EntireBible = new BookGroup { Name = "The Bible" };
 
         protected static readonly BookGroup OldTestament = 
             new BookGroup { Parent = EntireBible, Name = "Old Testament" };
@@ -94,8 +94,8 @@ namespace Garnet.Services
             new BookGroup { Parent = NewTestament, Name = "Paul's Letters" };
         private static readonly BookGroup GeneralLetters = 
             new BookGroup { Parent = NewTestament, Name = "General Letters" };
-        private static readonly BookGroup Revelation =
-            new BookGroup { Parent = NewTestament, Name = "Revelation" };
+        private static readonly BookGroup Apocalyptic =
+            new BookGroup { Parent = NewTestament, Name = "Apocalyptic" };
 
         private static readonly IEnumerable<BookGroup> BookGroups = new[]
         {
@@ -112,7 +112,7 @@ namespace Garnet.Services
             GospelsAndActs,
             PaulsLetters,
             GeneralLetters,
-            Revelation
+            Apocalyptic
         };
 
         private static readonly IEnumerable<Book> Books = new[]
@@ -577,7 +577,7 @@ namespace Garnet.Services
                 DbpId = "Rev",
                 Name = "Revelation",
                 NumberOfChapters = 22,
-                Group = GeneralLetters,
+                Group = Apocalyptic,
             },
         };
     }

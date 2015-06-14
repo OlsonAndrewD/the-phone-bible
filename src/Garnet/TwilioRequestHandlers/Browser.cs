@@ -18,11 +18,18 @@ namespace Garnet.Api.TwilioRequestHandlers
         protected abstract string ParentName { get; }
         protected abstract int NumberOfOptions { get; }
 
-        protected abstract void PromptForSelectionInternal(TwilioResponse response);
+        protected abstract void HandleBrowseInternal(TwilioResponse response);
         protected abstract TwilioResponseResult HandleSelectionInternal(string phoneNumber, string selection);
 
-        public TwilioResponseResult PromptForSelection()
+        public TwilioResponseResult HandleBrowse(string phoneNumber, bool navigatingUp)
         {
+            if (NumberOfOptions == 1)
+            {
+                return navigatingUp ?
+                    new TwilioRedirectResult(TwilioVoiceController.GetBrowseUrl(ParentName, true)) :
+                    HandleSelection(phoneNumber, 1.ToString());
+            }
+
             var numDigits = NumberOfOptions == 0 ?
                 0 :
                 Convert.ToInt32(Math.Floor(Math.Log10(NumberOfOptions))) + 1;
@@ -36,7 +43,10 @@ namespace Garnet.Api.TwilioRequestHandlers
                     timeout = 4
                 });
 
-                PromptForSelectionInternal(response);
+                response.Say(Name);
+                response.Pause();
+
+                HandleBrowseInternal(response);
 
                 if (ParentName != null)
                 {
@@ -64,7 +74,7 @@ namespace Garnet.Api.TwilioRequestHandlers
 
             if (selection == "0")
             {
-                return new TwilioRedirectResult(TwilioVoiceController.GetBrowseUrl(ParentName));
+                return new TwilioRedirectResult(TwilioVoiceController.GetBrowseUrl(ParentName, true));
             }
 
             return HandleSelectionInternal(phoneNumber, selection);

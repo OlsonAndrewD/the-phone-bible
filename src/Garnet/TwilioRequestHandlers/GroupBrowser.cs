@@ -5,6 +5,7 @@ using Twilio.TwiML;
 using Garnet.Api.Controllers;
 using Garnet.Domain.Entities;
 using Garnet.Domain.Extensions;
+using System;
 
 namespace Garnet.Api.TwilioRequestHandlers
 {
@@ -35,7 +36,7 @@ namespace Garnet.Api.TwilioRequestHandlers
             get { return _options.Count; }
         }
 
-        protected override void PromptForSelectionInternal(TwilioResponse response)
+        protected override void HandleBrowseInternal(TwilioResponse response)
         {
             var optionNumber = 1;
             foreach (var option in _options)
