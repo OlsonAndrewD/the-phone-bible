@@ -77,9 +77,11 @@ namespace Garnet.Api.Controllers
 
         [Route(Routes.Browse)]
         [HttpGet]
-        public IActionResult Browse([FromQuery] string bookOrGroupName)
+        public IActionResult Browse(
+            [FromQuery(Name = "From")] string phoneNumber, 
+            [FromQuery] string bookOrGroupName)
         {
-            var browser = CreateBrowser(bookOrGroupName);
+            var browser = CreateBrowser(phoneNumber, bookOrGroupName);
             if (browser != null)
             {
                 return browser.PromptForSelection();
@@ -95,7 +97,7 @@ namespace Garnet.Api.Controllers
             [FromForm(Name = "Digits")] string selection,
             [FromQuery] string bookOrGroupName)
         {
-            var browser = CreateBrowser(bookOrGroupName);
+            var browser = CreateBrowser(fromPhoneNumber, bookOrGroupName);
             if (browser != null)
             {
                 return browser.HandleSelection(fromPhoneNumber, selection);
@@ -110,8 +112,17 @@ namespace Garnet.Api.Controllers
                 Routes.Browse, "?bookOrGroupName=", WebUtility.UrlEncode(bookOrGroupName));
         }
 
-        private IBrowser CreateBrowser(string bookOrGroupName)
+        private IBrowser CreateBrowser(string phoneNumber, string bookOrGroupName)
         {
+            if (string.IsNullOrEmpty(bookOrGroupName))
+            {
+                var user = _userService.Get(phoneNumber);
+                if (user != null)
+                {
+                    return _browserFactory.CreateBookBrowser(user.CurrentChapter.Book);
+                }
+            }
+
             var book = _contentService.GetBook(bookOrGroupName);
             if (book != null)
             {

@@ -2,6 +2,7 @@
 using Twilio.TwiML;
 using Garnet.Domain.Services;
 using Garnet.Domain.Entities;
+using Garnet.Domain.Extensions;
 
 namespace Garnet.Api.TwilioRequestHandlers
 {
@@ -12,6 +13,7 @@ namespace Garnet.Api.TwilioRequestHandlers
         private readonly Book _book;
 
         public BookBrowser(Book book, IUserService userService, IContentService contentService)
+            : base(book.Group.GetTopmostAncestor().Name)
         {
             _book = book;
             _userService = userService;

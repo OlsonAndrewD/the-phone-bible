@@ -4,6 +4,7 @@ using Garnet.Api.ActionResults;
 using Twilio.TwiML;
 using Garnet.Api.Controllers;
 using Garnet.Domain.Entities;
+using Garnet.Domain.Extensions;
 
 namespace Garnet.Api.TwilioRequestHandlers
 {
@@ -13,6 +14,7 @@ namespace Garnet.Api.TwilioRequestHandlers
         private readonly BookGroup _bookGroup;
 
         public GroupBrowser(BookGroup bookGroup, IEnumerable<string> optionsInGroup)
+            : base(bookGroup.GetTopmostAncestor().Name)
         {
             _bookGroup = bookGroup;
             _options = optionsInGroup.ToList();

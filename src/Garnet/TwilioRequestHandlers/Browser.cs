@@ -7,6 +7,13 @@ namespace Garnet.Api.TwilioRequestHandlers
 {
     public abstract class Browser : IBrowser
     {
+        private readonly string _topGroupName;
+
+        protected Browser(string topGroupName)
+        {
+            _topGroupName = topGroupName;
+        }
+
         protected abstract string Name { get; }
         protected abstract string ParentName { get; }
         protected abstract int NumberOfOptions { get; }
@@ -33,7 +40,8 @@ namespace Garnet.Api.TwilioRequestHandlers
 
                 if (ParentName != null)
                 {
-                    response.Say("Press 0 to go back.");
+                    response.Say(string.Concat("Press 0 to exit ", Name, "."));
+                    response.Say("Press star to go elsewhere.");
                 }
 
                 response.Say("Press pound for main menu.");
@@ -47,6 +55,11 @@ namespace Garnet.Api.TwilioRequestHandlers
             if (selection == "#")
             {
                 return new TwilioRedirectResult(Routes.MainMenu);
+            }
+
+            if (selection == "*")
+            {
+                return new TwilioRedirectResult(TwilioVoiceController.GetBrowseUrl(_topGroupName));
             }
 
             if (selection == "0")

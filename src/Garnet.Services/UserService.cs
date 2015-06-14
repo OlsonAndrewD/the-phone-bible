@@ -19,6 +19,13 @@ namespace Garnet.Services
             _contentService = contentService;
         }
 
+        public User Get(string id)
+        {
+            User user;
+            _userStore.TryGetValue(id, out user);
+            return user;
+        }
+
         public User GetOrCreate(string id)
         {
             return _userStore.GetOrAdd(id, x => new User
