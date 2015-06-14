@@ -4,6 +4,7 @@ using Garnet.Domain.Services;
 using Garnet.Domain.Entities;
 using Garnet.Domain.Extensions;
 using System;
+using Garnet.Api.Extensions;
 
 namespace Garnet.Api.TwilioRequestHandlers
 {
@@ -38,7 +39,8 @@ namespace Garnet.Api.TwilioRequestHandlers
 
         protected override void HandleBrowseInternal(TwilioResponse response)
         {
-            response.Say(string.Concat("Enter a chapter number between 1 and ", _book.NumberOfChapters, "."));
+            response.AliceSay(
+                string.Concat("Enter a chapter number between 1 and ", _book.NumberOfChapters, "."));
         }
 
         protected override TwilioResponseResult HandleSelectionInternal(string phoneNumber, string selection)

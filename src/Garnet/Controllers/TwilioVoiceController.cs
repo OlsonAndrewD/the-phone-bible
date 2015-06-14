@@ -1,4 +1,5 @@
 ﻿using Garnet.Api.ActionResults;
+using Garnet.Api.Extensions;
 using Garnet.Api.TwilioRequestHandlers;
 using Garnet.Domain.Services;
 using Microsoft.AspNet.Mvc;
@@ -30,7 +31,7 @@ namespace Garnet.Api.Controllers
             return new TwilioResponseResult(x =>
             {
                 x.BeginGather(new { action = Routes.MainMenu, timeout = 2 });
-                x.Say("For main menu, press pound anytime.");
+                x.AliceSay("For main menu, press pound anytime.");
                 x.EndGather();
                 x.Redirect(Routes.CurrentContent, "get");
             });

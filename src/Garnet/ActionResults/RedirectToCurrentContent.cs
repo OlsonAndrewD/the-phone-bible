@@ -1,11 +1,13 @@
-﻿namespace Garnet.Api.ActionResults
+﻿using Garnet.Api.Extensions;
+
+namespace Garnet.Api.ActionResults
 {
     public class RedirectToCurrentContent : TwilioResponseResult
     {
         public RedirectToCurrentContent()
             : base(x =>
             {
-                x.Say("One moment please.");
+                x.AliceSay("One moment please.");
                 x.Redirect(Routes.CurrentContent, "get");
             })
         {

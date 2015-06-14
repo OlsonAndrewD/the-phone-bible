@@ -6,6 +6,7 @@ using Garnet.Api.Controllers;
 using Garnet.Domain.Entities;
 using Garnet.Domain.Extensions;
 using System;
+using Garnet.Api.Extensions;
 
 namespace Garnet.Api.TwilioRequestHandlers
 {
@@ -41,7 +42,7 @@ namespace Garnet.Api.TwilioRequestHandlers
             var optionNumber = 1;
             foreach (var option in _options)
             {
-                response.Say("Enter " + optionNumber++ + " for " + option + ".");
+                response.AliceSay("For " + option + ", dial " + optionNumber++ + ".");
             }
         }
 

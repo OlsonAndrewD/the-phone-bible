@@ -1,4 +1,5 @@
 ﻿using Garnet.Api.ActionResults;
+using Garnet.Api.Extensions;
 using Garnet.Domain.Services;
 
 namespace Garnet.Api.TwilioRequestHandlers
@@ -19,9 +20,9 @@ namespace Garnet.Api.TwilioRequestHandlers
             return new TwilioResponseResult(x =>
             {
                 x.BeginGather(new { numDigits = 1 });
-                x.Say(string.Concat("Press 1 to hear the current chapter."));
-                x.Say(string.Concat("Press 2 to hear the next chapter."));
-                x.Say(string.Concat("Press 3 to choose a different chapter."));
+                x.AliceSay(string.Concat("Press 1 to hear the current chapter."));
+                x.AliceSay(string.Concat("Press 2 to hear the next chapter."));
+                x.AliceSay(string.Concat("Press 3 to choose a different chapter."));
                 x.EndGather();
                 x.Redirect(Routes.MainMenu, "get");
             });

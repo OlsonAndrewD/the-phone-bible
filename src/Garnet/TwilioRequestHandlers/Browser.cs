@@ -1,5 +1,6 @@
 ﻿using Garnet.Api.ActionResults;
 using Garnet.Api.Controllers;
+using Garnet.Api.Extensions;
 using System;
 using Twilio.TwiML;
 
@@ -43,18 +44,18 @@ namespace Garnet.Api.TwilioRequestHandlers
                     timeout = 4
                 });
 
-                response.Say(Name);
+                response.AliceSay(Name);
                 response.Pause();
 
                 HandleBrowseInternal(response);
 
                 if (ParentName != null)
                 {
-                    response.Say(string.Concat("Press 0 to exit ", Name, "."));
-                    response.Say("Press star to go elsewhere.");
+                    response.AliceSay(string.Concat("Press 0 to exit ", Name, "."));
+                    response.AliceSay("Press star to go elsewhere.");
                 }
 
-                response.Say("Press pound for main menu.");
+                response.AliceSay("Press pound for main menu.");
                 response.EndGather();
                 response.Redirect();
             });
