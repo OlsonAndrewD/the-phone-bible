@@ -30,7 +30,7 @@ namespace Garnet.Api.Controllers
         {
             return new TwilioResponseResult(x =>
             {
-                x.BeginGather(new { action = Routes.MainMenu, timeout = 2 });
+                x.BeginGather(new { timeout = 2, finishOnKey = '*' /* just so # will POST instead of falling through */ });
                 x.AliceSay("For main menu, press pound anytime.");
                 x.EndGather();
                 x.Redirect(Routes.CurrentContent, "get");
@@ -58,7 +58,7 @@ namespace Garnet.Api.Controllers
 
             return new TwilioResponseResult(x =>
             {
-                x.BeginGather(new { action = Routes.MainMenu, timeout = 2 });
+                x.BeginGather(new { timeout = 2, finishOnKey = '*' /* just so # will POST instead of falling through */ });
                 x.Play(contentUrl);
                 if (!string.IsNullOrEmpty(copyrightInfo))
                 {
@@ -67,6 +67,13 @@ namespace Garnet.Api.Controllers
                 x.EndGather();
                 x.Redirect(Routes.MainMenu, "get");
             });
+        }
+
+        [Route(Routes.CurrentContent)]
+        [HttpPost]
+        public IActionResult InterruptCurrentContent()
+        {
+            return new TwilioRedirectResult(Routes.MainMenu);
         }
 
         [Route(Routes.MainMenu)]
