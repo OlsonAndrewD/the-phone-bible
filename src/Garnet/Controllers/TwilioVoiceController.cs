@@ -52,8 +52,8 @@ namespace Garnet.Api.Controllers
         {
             var user = _userService.GetOrCreate(fromPhoneNumber);
 
-            var getContentUrlTask = _contentService.GetContentUrlAsync(user.CurrentChapter);
-            var getCopyrightInfoTask = _contentService.GetCopyrightInfoAsync(user.CurrentChapter);
+            var getContentUrlTask = _contentService.GetContentUrlAsync(user);
+            var getCopyrightInfoTask = _contentService.GetCopyrightInfoAsync(user);
 
             var contentUrl = await getContentUrlTask;
             var copyrightInfo = await getCopyrightInfoTask;
@@ -146,13 +146,14 @@ namespace Garnet.Api.Controllers
                 var user = _userService.Get(phoneNumber);
                 if (user != null)
                 {
-                    if (user.CurrentChapter.Book.NumberOfChapters == 1)
+                    var chapter = _bibleMetadataService.GetChapterByNumber(user.CurrentChapterNumber);
+                    if (chapter.Book.NumberOfChapters == 1)
                     {
-                        return _browserFactory.CreateGroupBrowser(user.CurrentChapter.Book.Group);
+                        return _browserFactory.CreateGroupBrowser(chapter.Book.Group);
                     }
                     else
                     {
-                        return _browserFactory.CreateBookBrowser(user.CurrentChapter.Book);
+                        return _browserFactory.CreateBookBrowser(chapter.Book);
                     }
                 }
             }

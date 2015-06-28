@@ -36,7 +36,11 @@ namespace Garnet.Api.TwilioRequestHandlers
             if (advanceToNextContent)
             {
                 var user = _userService.GetOrCreate(phoneNumber);
-                user.CurrentChapter = _bibleMetadataService.GetChapterAfter(user.CurrentChapter);
+                user.CurrentChapterNumber++;
+                if (_bibleMetadataService.GetChapterByNumber(user.CurrentChapterNumber) == null)
+                {
+                    user.CurrentChapterNumber = 1;
+                }
                 _userService.AddOrUpdate(user);
             }
 

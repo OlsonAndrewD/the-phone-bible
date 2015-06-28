@@ -19,7 +19,7 @@ namespace Garnet.Api
 
         public IBrowser CreateBookBrowser(Book book)
         {
-            return new BookBrowser(book, _userService);
+            return new BookBrowser(book, _userService, _bibleMetadataService);
         }
 
         public IBrowser CreateGroupBrowser(BookGroup bookGroup)

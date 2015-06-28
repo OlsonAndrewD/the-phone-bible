@@ -4,7 +4,8 @@ namespace Garnet.Services.BibleContentServices
 {
     public class KjvBibleContentService : DigitalBiblePlatformContentService, IContentService
     {
-        public KjvBibleContentService(string apiKey) : base(apiKey)
+        public KjvBibleContentService(IUserService userService, IBibleMetadataService bibleMetadataService, string apiKey)
+            : base(userService, bibleMetadataService, apiKey)
         {
         }
 

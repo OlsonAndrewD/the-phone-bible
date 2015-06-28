@@ -13,5 +13,7 @@ namespace Garnet.Domain.Services
 
         Chapter GetDefaultChapter();
         Chapter GetChapterAfter(Chapter chapter);
+        int GetChapterNumber(Chapter chapter);
+        Chapter GetChapterByNumber(int chapterNumber);
     }
 }

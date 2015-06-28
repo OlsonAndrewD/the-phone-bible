@@ -5,7 +5,7 @@ namespace Garnet.Domain.Services
 {
     public interface IContentService
     {
-        Task<string> GetContentUrlAsync(Chapter chapter);
-        Task<string> GetCopyrightInfoAsync(Chapter chapter);
+        Task<string> GetContentUrlAsync(User user);
+        Task<string> GetCopyrightInfoAsync(User user);
     }
 }

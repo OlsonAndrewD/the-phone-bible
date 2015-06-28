@@ -3,6 +3,6 @@
     public class User
     {
         public string Id { get; set; }
-        public Chapter CurrentChapter { get; set; }
+        public int CurrentChapterNumber { get; set; }
     }
 }

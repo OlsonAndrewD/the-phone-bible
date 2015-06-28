@@ -5,7 +5,8 @@ namespace Garnet.Services.BibleContentServices
 {
     public class EsvBibleContentService : DigitalBiblePlatformContentService, IContentService
     {
-        public EsvBibleContentService(string apiKey) : base(apiKey)
+        public EsvBibleContentService(IUserService userService, IBibleMetadataService bibleMetadataService, string apiKey)
+            : base(userService, bibleMetadataService, apiKey)
         {
         }
 

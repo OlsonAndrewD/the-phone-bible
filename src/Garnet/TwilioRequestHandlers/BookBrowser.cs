@@ -12,12 +12,14 @@ namespace Garnet.Api.TwilioRequestHandlers
     {
         private readonly IUserService _userService;
         private readonly Book _book;
+        private readonly IBibleMetadataService _bibleMetadataService;
 
-        public BookBrowser(Book book, IUserService userService)
+        public BookBrowser(Book book, IUserService userService, IBibleMetadataService bibleMetadataService)
             : base(book.Group.GetTopmostAncestor().Name)
         {
             _book = book;
             _userService = userService;
+            _bibleMetadataService = bibleMetadataService;
         }
 
         protected override string Name
@@ -49,11 +51,12 @@ namespace Garnet.Api.TwilioRequestHandlers
                 int chapterNumber;
                 if (int.TryParse(selection, out chapterNumber))
                 {
-                    user.CurrentChapter = new Chapter
-                    {
-                        Book = _book,
-                        ChapterNumber = int.Parse(selection)
-                    };
+                    user.CurrentChapterNumber = _bibleMetadataService.GetChapterNumber(
+                        new Chapter
+                        {
+                            Book = _book,
+                            ChapterNumber = int.Parse(selection)
+                        });
                     _userService.AddOrUpdate(user);
                     return new RedirectToCurrentContent();
                 }

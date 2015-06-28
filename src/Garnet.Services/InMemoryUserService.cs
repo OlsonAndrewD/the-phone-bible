@@ -31,7 +31,7 @@ namespace Garnet.Services
             return _userStore.GetOrAdd(id, x => new User
             {
                 Id = id,
-                CurrentChapter = _bibleMetadataService.GetDefaultChapter()
+                CurrentChapterNumber = 1
             });
         }
 
@@ -39,7 +39,7 @@ namespace Garnet.Services
         {
             return _userStore.AddOrUpdate(user.Id, user, (id, existing) =>
             {
-                existing.CurrentChapter = user.CurrentChapter;
+                existing.CurrentChapterNumber = user.CurrentChapterNumber;
                 return existing;
             });
         }

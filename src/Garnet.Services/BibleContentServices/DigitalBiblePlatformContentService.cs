@@ -1,4 +1,5 @@
 ﻿using Garnet.Domain.Entities;
+using Garnet.Domain.Services;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,13 @@ namespace Garnet.Services.BibleContentServices
         private readonly string _apiKey;
         private const string MediaType = "DA"; // only digital audio for now
         private const char ApiVersion = '2';
+        private readonly IUserService _userService;
+        private readonly IBibleMetadataService _bibleMetadataService;
 
-        public DigitalBiblePlatformContentService(string apiKey)
+        public DigitalBiblePlatformContentService(IUserService userService, IBibleMetadataService bibleMetadataService, string apiKey)
         {
+            _userService = userService;
+            _bibleMetadataService = bibleMetadataService;
             if (apiKey == null)
             {
                 throw new ArgumentNullException("apiKey");
@@ -26,14 +31,17 @@ namespace Garnet.Services.BibleContentServices
         protected abstract string VersionCode { get; }
         protected abstract bool IsDramaType { get; }
 
-        public Task<string> GetContentUrlAsync(Chapter chapter)
+        public Task<string> GetContentUrlAsync(User user)
         {
+            var chapter = _bibleMetadataService.GetChapterByNumber(user.CurrentChapterNumber);
             return Task.WhenAll(GetBaseAudioUrl(), GetAudioUrl(chapter))
                 .ContinueWith(x => string.Join("/", x.Result));
         }
 
-        public async Task<string> GetCopyrightInfoAsync(Chapter chapter)
+        public async Task<string> GetCopyrightInfoAsync(User user)
         {
+            var chapter = _bibleMetadataService.GetChapterByNumber(user.CurrentChapterNumber);
+
             var restClient = CreateDbtRestClient();
             var request = new RestRequest("library/metadata");
             request.AddParameter("dam_id", GetDamId(chapter));

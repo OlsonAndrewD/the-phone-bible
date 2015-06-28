@@ -2,6 +2,7 @@
 using Garnet.Domain.Services;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Garnet.Services
 {
@@ -44,32 +45,103 @@ namespace Garnet.Services
 
         public Book GetBook(string bookName)
         {
-            return Books.FirstOrDefault(x => x.Name == bookName);
+            return Books.Value.FirstOrDefault(x => x.Name == bookName);
         }
 
         public BookGroup GetGroup(string groupName = null)
         {
             groupName = groupName ?? BookGroup.EntireBible.Name;
-            return BookGroups.FirstOrDefault(x => x.Name == groupName);
+            return BookGroups.Value.FirstOrDefault(x => x.Name == groupName);
         }
 
         public IEnumerable<BookGroup> GetChildGroups(string parentGroupName)
         {
             parentGroupName = parentGroupName ?? BookGroup.EntireBible.Name;
-            return BookGroups.Where(x => x.Parent != null && x.Parent.Name == parentGroupName);
+            return BookGroups.Value.Where(x => x.Parent != null && x.Parent.Name == parentGroupName);
         }
 
         public IEnumerable<Book> GetBooks(string groupName = null)
         {
             if (groupName == null)
             {
-                return Books;
+                return Books.Value;
             }
             else
             {
-                return Books.Where(x => x.Group.Name == groupName);
+                return Books.Value.Where(x => x.Group.Name == groupName);
             }
         }
+
+        public int GetChapterNumber(Chapter chapter)
+        {
+            var firstChapterNumberInBook = _firstChapterNumberLookup.Value[chapter.Book];
+            return firstChapterNumberInBook + chapter.ChapterNumber - 1;
+        }
+
+        private static Lazy<Dictionary<Book, int>> _firstChapterNumberLookup = new Lazy<Dictionary<Book, int>>(() =>
+        {
+            var lookup = new Dictionary<Book, int>();
+            var chapterNumber = 1;
+
+            foreach (var book in Books.Value)
+            {
+                lookup.Add(book, chapterNumber);
+                chapterNumber += book.NumberOfChapters;
+            }
+
+            return lookup;
+        });
+
+        public Chapter GetChapterByNumber(int chapterNumber)
+        {
+            var book = BinarySearchForBookThatContains(chapterNumber, 0, _bookLookupByChapterNumber.Value.Count - 1);
+            var firstChapterNumberInBook = _firstChapterNumberLookup.Value[book];
+            return new Chapter
+            {
+                Book = book,
+                ChapterNumber = chapterNumber - firstChapterNumberInBook + 1
+            };
+        }
+
+        private Book BinarySearchForBookThatContains(int chapterNumber, int minIndex, int maxIndex)
+        {
+            if (minIndex > maxIndex)
+            {
+                return null;
+            }
+
+            var midIndex = minIndex + ((maxIndex - minIndex) / 2);
+            var middleEntry = _bookLookupByChapterNumber.Value[midIndex];
+            var middleBook = middleEntry.Value;
+            var middleBookFirstChapterNumber = middleEntry.Key;
+            var middleBookLastChapterNumber = middleBookFirstChapterNumber + middleBook.NumberOfChapters - 1;
+
+            if (chapterNumber >= middleBookFirstChapterNumber &&
+                chapterNumber <= middleBookLastChapterNumber)
+            {
+                return middleBook;
+            }
+
+            if (chapterNumber < middleBookFirstChapterNumber) {
+                return BinarySearchForBookThatContains(chapterNumber, minIndex, midIndex - 1);
+            }
+
+            return BinarySearchForBookThatContains(chapterNumber, midIndex + 1, maxIndex);
+        }
+
+        private static Lazy<IList<KeyValuePair<int, Book>>> _bookLookupByChapterNumber = new Lazy<IList<KeyValuePair<int, Book>>>(() =>
+        {
+            var list = new List<KeyValuePair<int, Book>>();
+            var chapterNumber = 1;
+
+            foreach (var book in Books.Value)
+            {
+                list.Add(new KeyValuePair<int, Book>(chapterNumber, book));
+                chapterNumber += book.NumberOfChapters;
+            }
+
+            return list;
+        });
 
         private static readonly BookGroup BooksOfMoses =
             new BookGroup { Parent = BookGroup.OldTestament, Name = "Books of Moses" };
@@ -91,7 +163,7 @@ namespace Garnet.Services
         private static readonly BookGroup Apocalyptic =
             new BookGroup { Parent = BookGroup.NewTestament, Name = "Apocalyptic" };
 
-        private static readonly IEnumerable<BookGroup> BookGroups = new[]
+        private static Lazy<IEnumerable<BookGroup>> BookGroups = new Lazy<IEnumerable<BookGroup>>(() => new[]
         {
             BookGroup.EntireBible,
 
@@ -107,9 +179,9 @@ namespace Garnet.Services
             PaulsLetters,
             GeneralLetters,
             Apocalyptic
-        };
+        });
 
-        private static readonly IEnumerable<Book> Books = new[]
+        private static Lazy<IEnumerable<Book>> Books = new Lazy<IEnumerable<Book>>(() => new[]
         {
             new Book
             {
@@ -573,6 +645,6 @@ namespace Garnet.Services
                 NumberOfChapters = 22,
                 Group = Apocalyptic,
             },
-        };
+        });
     }
 }

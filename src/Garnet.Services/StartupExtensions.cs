@@ -10,7 +10,10 @@ namespace Garnet.Services
         {
             services.AddTransient<IBibleMetadataService, BibleMetadataService>();
             services.AddTransient<IContentService>(serviceProvider =>
-                new KjvBibleContentService(digitalBiblePlatformApiKey));
+                new KjvBibleContentService(
+                    serviceProvider.GetRequiredService<IUserService>(),
+                    serviceProvider.GetRequiredService<IBibleMetadataService>(),
+                    digitalBiblePlatformApiKey));
             services.AddTransient<IUserService, InMemoryUserService>();
         }
     }
