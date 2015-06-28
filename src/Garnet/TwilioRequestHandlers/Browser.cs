@@ -2,6 +2,7 @@
 using Garnet.Api.Controllers;
 using Garnet.Api.Extensions;
 using System;
+using System.Threading.Tasks;
 using Twilio.TwiML;
 
 namespace Garnet.Api.TwilioRequestHandlers
@@ -20,15 +21,15 @@ namespace Garnet.Api.TwilioRequestHandlers
         protected abstract int NumberOfOptions { get; }
 
         protected abstract void HandleBrowseInternal(TwilioResponse response);
-        protected abstract TwilioResponseResult HandleSelectionInternal(string phoneNumber, string selection);
+        protected abstract Task<TwilioResponseResult> HandleSelectionInternal(string phoneNumber, string selection);
 
-        public TwilioResponseResult HandleBrowse(string phoneNumber, bool navigatingUp)
+        public async Task<TwilioResponseResult> HandleBrowseAsync(string phoneNumber, bool navigatingUp)
         {
             if (NumberOfOptions == 1)
             {
                 return navigatingUp ?
                     new TwilioRedirectResult(TwilioVoiceController.GetBrowseUrl(ParentName, true)) :
-                    HandleSelection(phoneNumber, 1.ToString());
+                    await HandleSelection(phoneNumber, 1.ToString());
             }
 
             var numDigits = NumberOfOptions == 0 ?
@@ -61,7 +62,7 @@ namespace Garnet.Api.TwilioRequestHandlers
             });
         }
 
-        public TwilioResponseResult HandleSelection(string phoneNumber, string selection)
+        public async Task<TwilioResponseResult> HandleSelection(string phoneNumber, string selection)
         {
             if (selection == "#")
             {
@@ -78,7 +79,7 @@ namespace Garnet.Api.TwilioRequestHandlers
                 return new TwilioRedirectResult(TwilioVoiceController.GetBrowseUrl(ParentName, true));
             }
 
-            return HandleSelectionInternal(phoneNumber, selection);
+            return await HandleSelectionInternal(phoneNumber, selection);
         }
     }
 }

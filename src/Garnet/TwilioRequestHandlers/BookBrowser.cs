@@ -5,6 +5,7 @@ using Garnet.Domain.Entities;
 using Garnet.Domain.Extensions;
 using System;
 using Garnet.Api.Extensions;
+using System.Threading.Tasks;
 
 namespace Garnet.Api.TwilioRequestHandlers
 {
@@ -43,9 +44,9 @@ namespace Garnet.Api.TwilioRequestHandlers
                 string.Concat("Enter a chapter number between 1 and ", _book.NumberOfChapters, "."));
         }
 
-        protected override TwilioResponseResult HandleSelectionInternal(string phoneNumber, string selection)
+        protected override async Task<TwilioResponseResult> HandleSelectionInternal(string phoneNumber, string selection)
         {
-            var user = _userService.GetOrCreate(phoneNumber);
+            var user = await _userService.GetOrCreateAsync(phoneNumber);
             if (user != null)
             {
                 int chapterNumber;
@@ -57,7 +58,7 @@ namespace Garnet.Api.TwilioRequestHandlers
                             Book = _book,
                             ChapterNumber = int.Parse(selection)
                         });
-                    _userService.AddOrUpdate(user);
+                    await _userService.AddOrUpdateAsync(user);
                     return new RedirectToCurrentContent();
                 }
             }

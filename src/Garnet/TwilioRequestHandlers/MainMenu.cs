@@ -1,6 +1,7 @@
 ﻿using Garnet.Api.ActionResults;
 using Garnet.Api.Extensions;
 using Garnet.Domain.Services;
+using System.Threading.Tasks;
 
 namespace Garnet.Api.TwilioRequestHandlers
 {
@@ -28,20 +29,20 @@ namespace Garnet.Api.TwilioRequestHandlers
             });
         }
 
-        public TwilioResponseResult HandleSelection(string phoneNumber, string selection)
+        public async Task<TwilioResponseResult> HandleSelection(string phoneNumber, string selection)
         {
             var redirectToContent = selection == "1" || selection == "2";
             var advanceToNextContent = selection == "2";
 
             if (advanceToNextContent)
             {
-                var user = _userService.GetOrCreate(phoneNumber);
+                var user = await _userService.GetOrCreateAsync(phoneNumber);
                 user.CurrentChapterNumber++;
                 if (_bibleMetadataService.GetChapterByNumber(user.CurrentChapterNumber) == null)
                 {
                     user.CurrentChapterNumber = 1;
                 }
-                _userService.AddOrUpdate(user);
+                await _userService.AddOrUpdateAsync(user);
             }
 
             if (redirectToContent)

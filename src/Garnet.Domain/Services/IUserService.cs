@@ -1,11 +1,12 @@
 ﻿using Garnet.Domain.Entities;
+using System.Threading.Tasks;
 
 namespace Garnet.Domain.Services
 {
     public interface IUserService
     {
-        User Get(string id);
-        User GetOrCreate(string id);
-        User AddOrUpdate(User user);
+        Task<User> GetAsync(string id);
+        Task<User> GetOrCreateAsync(string id);
+        Task<User> AddOrUpdateAsync(User user);
     }
 }

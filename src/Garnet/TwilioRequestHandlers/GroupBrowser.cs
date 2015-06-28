@@ -7,6 +7,7 @@ using Garnet.Domain.Entities;
 using Garnet.Domain.Extensions;
 using System;
 using Garnet.Api.Extensions;
+using System.Threading.Tasks;
 
 namespace Garnet.Api.TwilioRequestHandlers
 {
@@ -46,7 +47,7 @@ namespace Garnet.Api.TwilioRequestHandlers
             }
         }
 
-        protected override TwilioResponseResult HandleSelectionInternal(string phoneNumber, string selection)
+        protected override Task<TwilioResponseResult> HandleSelectionInternal(string phoneNumber, string selection)
         {
             var newGroupName = Name;
 
@@ -57,7 +58,8 @@ namespace Garnet.Api.TwilioRequestHandlers
                 newGroupName = selectedOptionName ?? newGroupName;
             }
 
-            return new TwilioRedirectResult(TwilioVoiceController.GetBrowseUrl(newGroupName));
+            return Task.FromResult<TwilioResponseResult>(
+                new TwilioRedirectResult(TwilioVoiceController.GetBrowseUrl(newGroupName)));
         }
     }
 }

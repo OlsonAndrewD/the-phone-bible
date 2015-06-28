@@ -1,4 +1,5 @@
-﻿using Microsoft.Framework.DependencyInjection;
+﻿using Garnet.Domain.Repositories;
+using Microsoft.Framework.DependencyInjection;
 using StackExchange.Redis;
 
 namespace Garnet.DataAccess
@@ -9,6 +10,7 @@ namespace Garnet.DataAccess
         {
             services.AddSingleton(serviceProvider =>
                 ConnectionMultiplexer.Connect(redisConnectionString));
+            services.AddTransient<IUserRepository, UserRepository>();
         }
     }
 }

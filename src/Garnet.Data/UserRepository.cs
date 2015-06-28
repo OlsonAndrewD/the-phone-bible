@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Garnet.Domain.Entities;
+﻿using System.Threading.Tasks;
 using Garnet.Domain.Repositories;
 using StackExchange.Redis;
 
@@ -15,25 +13,43 @@ namespace Garnet.DataAccess
             _redis = redis;
         }
 
+        public async Task<int?> GetCurrentChapterNumber(string userId)
+        {
+            var result = await _redis.GetDatabase().StringGetAsync(GetUserIdKey(userId));
+            if (!result.IsNull)
+            {
+                int chapterNumber;
+                if (result.TryParse(out chapterNumber))
+                {
+                    return chapterNumber;
+                }
+            }
+            return null;
+        }
+
         public async Task<string> GetUserIdByPhoneNumberAsync(string phoneNumber)
         {
-            var phoneNumberKey = string.Concat("phone:", phoneNumber);
-            return await _redis.GetDatabase().StringGetAsync(phoneNumberKey);
+            return await _redis.GetDatabase().StringGetAsync(GetPhoneNumberKey(phoneNumber));
+        }
 
-            //User user = null;
-            //if (!userId.IsNull)
-            //{
-            //    user = new User { Id = userId };
+        public async Task SetCurrentChapterNumber(string userId, int chapterNumber)
+        {
+            await _redis.GetDatabase().StringSetAsync(GetUserIdKey(userId), chapterNumber);
+        }
 
-            //    var userKey = string.Concat("userId:", userId);
-            //    var chapterString = await db.StringGetAsync(userKey);
-            //    if (!chapterString.IsNull)
-            //    {
-            //        user.CurrentChapter = Chapter.Parse(chapterString);
-            //    }
-            //}
+        public async Task SetUserPhoneNumber(string userId, string phoneNumber)
+        {
+            await _redis.GetDatabase().StringSetAsync(GetPhoneNumberKey(phoneNumber), userId);
+        }
 
-            //return user;
+        private static string GetUserIdKey(string userId)
+        {
+            return string.Concat("userId:", userId);
+        }
+
+        private static string GetPhoneNumberKey(string phoneNumber)
+        {
+            return string.Concat("phone:", phoneNumber);
         }
     }
 }

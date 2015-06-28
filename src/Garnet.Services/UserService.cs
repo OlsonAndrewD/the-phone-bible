@@ -1,31 +1,66 @@
 ﻿using System;
 using Garnet.Domain.Entities;
 using Garnet.Domain.Services;
+using Garnet.Domain.Repositories;
+using System.Threading.Tasks;
 
 namespace Garnet.Services
 {
     public class UserService : IUserService
     {
-        private readonly IBibleMetadataService _bibleMetadataService;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(IBibleMetadataService bibleMetadataService)
+        public UserService(IUserRepository userRepository)
         {
-            _bibleMetadataService = bibleMetadataService;
+            _userRepository = userRepository;
         }
 
-        public User AddOrUpdate(User user)
+        public async Task<User> AddOrUpdateAsync(User user)
         {
-            throw new NotImplementedException();
+            if (user != null)
+            {
+                if (user.Id == null)
+                {
+                    user.Id = Guid.NewGuid().ToString();
+                    await _userRepository.SetUserPhoneNumber(user.Id, user.PhoneNumber);
+                }
+
+                await _userRepository.SetCurrentChapterNumber(user.Id, user.CurrentChapterNumber);
+            }
+
+            return user;
         }
 
-        public User Get(string id)
+        public async Task<User> GetAsync(string phoneNumber)
         {
-            throw new NotImplementedException();
+            var userId = await _userRepository.GetUserIdByPhoneNumberAsync(phoneNumber);
+            if (userId == null)
+            {
+                return null;
+            }
+
+            var currentChapterNumber = await _userRepository.GetCurrentChapterNumber(userId);
+
+            return new User
+            {
+                Id = userId,
+                PhoneNumber = phoneNumber,
+                CurrentChapterNumber = currentChapterNumber ?? 1
+            };
         }
 
-        public User GetOrCreate(string id)
+        public async Task<User> GetOrCreateAsync(string phoneNumber)
         {
-            throw new NotImplementedException();
+            var user = await GetAsync(phoneNumber);
+            if (user == null)
+            {
+                user = await AddOrUpdateAsync(new User
+                {
+                    PhoneNumber = phoneNumber,
+                    CurrentChapterNumber = 1
+                });
+            }
+            return user;
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Garnet.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCurrentContent([FromQuery(Name = "From")] string fromPhoneNumber)
         {
-            var user = _userService.GetOrCreate(fromPhoneNumber);
+            var user = await _userService.GetOrCreateAsync(fromPhoneNumber);
 
             var getContentUrlTask = _contentService.GetContentUrlAsync(user);
             var getCopyrightInfoTask = _contentService.GetCopyrightInfoAsync(user);
@@ -87,24 +87,24 @@ namespace Garnet.Api.Controllers
 
         [Route(Routes.MainMenu)]
         [HttpPost]
-        public IActionResult HandleMainMenuSelection(
+        public async Task<IActionResult> HandleMainMenuSelection(
             [FromForm(Name = "From")] string phoneNumber, 
             [FromForm(Name = "Digits")] string selection)
         {
-            return _mainMenu.HandleSelection(phoneNumber, selection);
+            return await _mainMenu.HandleSelection(phoneNumber, selection);
         }
 
         [Route(Routes.Browse)]
         [HttpGet]
-        public IActionResult Browse(
+        public async Task<IActionResult> Browse(
             [FromQuery(Name = "From")] string phoneNumber, 
             [FromQuery] string bookOrGroupName,
             [FromQuery] bool navigatingUp = false)
         {
-            var browser = CreateBrowser(phoneNumber, bookOrGroupName);
+            var browser = await CreateBrowser(phoneNumber, bookOrGroupName);
             if (browser != null)
             {
-                return browser.HandleBrowse(phoneNumber, navigatingUp);
+                return await browser.HandleBrowseAsync(phoneNumber, navigatingUp);
             }
 
             return new TwilioRedirectResult(Routes.MainMenu);
@@ -112,15 +112,15 @@ namespace Garnet.Api.Controllers
 
         [Route(Routes.Browse)]
         [HttpPost]
-        public IActionResult HandleBrowseSelection(
+        public async Task<IActionResult> HandleBrowseSelection(
             [FromForm(Name = "From")] string fromPhoneNumber,
             [FromForm(Name = "Digits")] string selection,
             [FromQuery] string bookOrGroupName)
         {
-            var browser = CreateBrowser(fromPhoneNumber, bookOrGroupName);
+            var browser = await CreateBrowser(fromPhoneNumber, bookOrGroupName);
             if (browser != null)
             {
-                return browser.HandleSelection(fromPhoneNumber, selection);
+                return await browser.HandleSelection(fromPhoneNumber, selection);
             }
 
             return new TwilioRedirectResult(Routes.MainMenu);
@@ -139,11 +139,11 @@ namespace Garnet.Api.Controllers
             return url;
         }
 
-        private IBrowser CreateBrowser(string phoneNumber, string bookOrGroupName)
+        private async Task<IBrowser> CreateBrowser(string phoneNumber, string bookOrGroupName)
         {
             if (string.IsNullOrEmpty(bookOrGroupName))
             {
-                var user = _userService.Get(phoneNumber);
+                var user = await _userService.GetAsync(phoneNumber);
                 if (user != null)
                 {
                     var chapter = _bibleMetadataService.GetChapterByNumber(user.CurrentChapterNumber);
