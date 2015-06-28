@@ -95,6 +95,11 @@ namespace Garnet.Services
         public Chapter GetChapterByNumber(int chapterNumber)
         {
             var book = BinarySearchForBookThatContains(chapterNumber, 0, _bookLookupByChapterNumber.Value.Count - 1);
+            if (book == null)
+            {
+                return null;
+            }
+
             var firstChapterNumberInBook = _firstChapterNumberLookup.Value[book];
             return new Chapter
             {
