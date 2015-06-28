@@ -8,30 +8,30 @@ namespace Garnet.Api
 {
     public class BrowserFactory : IBrowserFactory
     {
-        private readonly IContentService _contentService;
         private readonly IUserService _userService;
+        private readonly IBibleMetadataService _bibleMetadataService;
 
-        public BrowserFactory(IUserService userService, IContentService contentService)
+        public BrowserFactory(IUserService userService, IBibleMetadataService bibleMetadataService)
         {
             _userService = userService;
-            _contentService = contentService;
+            _bibleMetadataService = bibleMetadataService;
         }
 
         public IBrowser CreateBookBrowser(Book book)
         {
-            return new BookBrowser(book, _userService, _contentService);
+            return new BookBrowser(book, _userService);
         }
 
         public IBrowser CreateGroupBrowser(BookGroup bookGroup)
         {
-            var childGroups = _contentService.GetChildGroups(bookGroup.Name);
+            var childGroups = _bibleMetadataService.GetChildGroups(bookGroup.Name);
             if (childGroups.Any())
             {
                 return new GroupBrowser(bookGroup, childGroups.Select(x => x.Name));
             }
             else
             {
-                var books = _contentService.GetBooks(bookGroup.Name);
+                var books = _bibleMetadataService.GetBooks(bookGroup.Name);
                 return new GroupBrowser(bookGroup, books.Select(x => x.Name));
             }
         }

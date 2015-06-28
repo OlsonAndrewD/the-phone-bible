@@ -1,7 +1,6 @@
 ﻿using Garnet.Domain.Services;
-using Garnet.Services.BibleContent.Common;
 
-namespace Garnet.Services.BibleContent
+namespace Garnet.Services.BibleContentServices
 {
     public class KjvBibleContentService : DigitalBiblePlatformContentService, IContentService
     {

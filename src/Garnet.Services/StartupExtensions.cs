@@ -1,5 +1,5 @@
 ﻿using Garnet.Domain.Services;
-using Garnet.Services.BibleContent;
+using Garnet.Services.BibleContentServices;
 using Microsoft.Framework.DependencyInjection;
 
 namespace Garnet.Services
@@ -8,9 +8,10 @@ namespace Garnet.Services
     {
         public static void ConfigureApplicationServices(this IServiceCollection services, string digitalBiblePlatformApiKey)
         {
+            services.AddTransient<IBibleMetadataService, BibleMetadataService>();
             services.AddTransient<IContentService>(serviceProvider =>
                 new KjvBibleContentService(digitalBiblePlatformApiKey));
-            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IUserService, InMemoryUserService>();
         }
     }
 }

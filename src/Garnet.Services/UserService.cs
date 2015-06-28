@@ -1,47 +1,31 @@
-﻿using Garnet.Domain.Entities;
+﻿using System;
+using Garnet.Domain.Entities;
 using Garnet.Domain.Services;
-using System.Collections.Concurrent;
 
 namespace Garnet.Services
 {
     public class UserService : IUserService
     {
-        private static readonly ConcurrentDictionary<string, User> _userStore;
-        private readonly IContentService _contentService;
+        private readonly IBibleMetadataService _bibleMetadataService;
 
-        static UserService()
+        public UserService(IBibleMetadataService bibleMetadataService)
         {
-            _userStore = new ConcurrentDictionary<string, User>();
-        }
-
-        public UserService(IContentService contentService)
-        {
-            _contentService = contentService;
-        }
-
-        public User Get(string id)
-        {
-            User user;
-            _userStore.TryGetValue(id, out user);
-            return user;
-        }
-
-        public User GetOrCreate(string id)
-        {
-            return _userStore.GetOrAdd(id, x => new User
-            {
-                Id = id,
-                CurrentChapter = _contentService.GetDefaultChapter()
-            });
+            _bibleMetadataService = bibleMetadataService;
         }
 
         public User AddOrUpdate(User user)
         {
-            return _userStore.AddOrUpdate(user.Id, user, (id, existing) =>
-            {
-                existing.CurrentChapter = user.CurrentChapter;
-                return existing;
-            });
+            throw new NotImplementedException();
+        }
+
+        public User Get(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public User GetOrCreate(string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

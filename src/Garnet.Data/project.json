@@ -7,8 +7,9 @@
     "licenseUrl": "",
 
     "dependencies": {
-        "WindowsAzure.Storage": "4.3.0",
-        "Garnet.Domain": "1.0.0-*"
+        "Garnet.Domain": "1.0.0-*",
+        "StackExchange.Redis": "1.0.450",
+        "Microsoft.Framework.DependencyInjection.Interfaces": "1.0.0-beta4"
     },
 
     "frameworks": {

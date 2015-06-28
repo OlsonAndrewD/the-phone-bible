@@ -7,12 +7,12 @@ namespace Garnet.Api.TwilioRequestHandlers
     public class MainMenu
     {
         private readonly IUserService _userService;
-        private readonly IContentService _contentService;
+        private readonly IBibleMetadataService _bibleMetadataService;
 
-        public MainMenu(IUserService userService, IContentService contentService)
+        public MainMenu(IUserService userService, IBibleMetadataService bibleMetadataService)
         {
             _userService = userService;
-            _contentService = contentService;
+            _bibleMetadataService = bibleMetadataService;
         }
 
         public TwilioResponseResult Get()
@@ -36,7 +36,7 @@ namespace Garnet.Api.TwilioRequestHandlers
             if (advanceToNextContent)
             {
                 var user = _userService.GetOrCreate(phoneNumber);
-                user.CurrentChapter = _contentService.GetChapterAfter(user.CurrentChapter);
+                user.CurrentChapter = _bibleMetadataService.GetChapterAfter(user.CurrentChapter);
                 _userService.AddOrUpdate(user);
             }
 
@@ -51,7 +51,6 @@ namespace Garnet.Api.TwilioRequestHandlers
 
             // TODO: Prevent infinite loop.
             return new TwilioRedirectResult(Routes.MainMenu);
-
         }
     }
 }

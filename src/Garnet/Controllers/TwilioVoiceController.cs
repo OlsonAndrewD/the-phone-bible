@@ -15,10 +15,12 @@ namespace Garnet.Api.Controllers
         private readonly IContentService _contentService;
         private readonly MainMenu _mainMenu;
         private readonly IBrowserFactory _browserFactory;
+        private readonly IBibleMetadataService _bibleMetadataService;
 
-        public TwilioVoiceController(IUserService userService, IContentService contentService, MainMenu mainMenu, IBrowserFactory browserFactory)
+        public TwilioVoiceController(IUserService userService, IBibleMetadataService bibleMetadataService, IContentService contentService, MainMenu mainMenu, IBrowserFactory browserFactory)
         {
             _userService = userService;
+            _bibleMetadataService = bibleMetadataService;
             _contentService = contentService;
             _mainMenu = mainMenu;
             _browserFactory = browserFactory;
@@ -155,13 +157,13 @@ namespace Garnet.Api.Controllers
                 }
             }
 
-            var book = _contentService.GetBook(bookOrGroupName);
+            var book = _bibleMetadataService.GetBook(bookOrGroupName);
             if (book != null)
             {
                 return _browserFactory.CreateBookBrowser(book);
             }
 
-            var group = _contentService.GetGroup(bookOrGroupName);
+            var group = _bibleMetadataService.GetGroup(bookOrGroupName);
             if (group != null)
             {
                 return _browserFactory.CreateGroupBrowser(group);

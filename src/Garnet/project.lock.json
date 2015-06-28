@@ -3,6 +3,7 @@
   "version": -9998,
   "projectFileDependencyGroups": {
     "": [
+      "Garnet.Data >= 1.0.0-*",
       "Garnet.Services >= 1.0.0-*",
       "Microsoft.AspNet.Mvc >= 6.0.0-beta4",
       "Microsoft.AspNet.Server.IIS >= 1.0.0-beta4",
@@ -2966,6 +2967,40 @@
         "lib/sl4/RestSharp.Silverlight.xml",
         "lib/windowsphone8/RestSharp.WindowsPhone.dll",
         "lib/windowsphone8/RestSharp.WindowsPhone.xml"
+      ]
+    },
+    "StackExchange.Redis/1.0.450": {
+      "serviceable": false,
+      "sha": "KIDa1rVBcJ4qFj2WSrDd2EmSF37Y1wGR3bJwc9QXw5MuF0pRMfuzIsdGVh1W1JsoSOhlZu/Lx+9NXsPGWn8vnQ==",
+      "frameworks": {
+        "DNX,Version=v4.5.1": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [
+            "lib/net45/StackExchange.Redis.dll"
+          ],
+          "compileAssemblies": [
+            "lib/net45/StackExchange.Redis.dll"
+          ]
+        },
+        "DNXCore,Version=v5.0": {
+          "dependencies": {},
+          "frameworkAssemblies": [],
+          "runtimeAssemblies": [],
+          "compileAssemblies": []
+        }
+      },
+      "files": [
+        "StackExchange.Redis.1.0.450.nupkg",
+        "StackExchange.Redis.1.0.450.nupkg.sha512",
+        "StackExchange.Redis.nuspec",
+        "lib/net40/StackExchange.Redis.dll",
+        "lib/net40/StackExchange.Redis.dll.config",
+        "lib/net40/StackExchange.Redis.pdb",
+        "lib/net40/StackExchange.Redis.xml",
+        "lib/net45/StackExchange.Redis.dll",
+        "lib/net45/StackExchange.Redis.pdb",
+        "lib/net45/StackExchange.Redis.xml"
       ]
     },
     "System.Collections.Immutable/1.1.33-beta": {

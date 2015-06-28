@@ -3,6 +3,7 @@
     "version": "1.0.0-*",
 
     "dependencies": {
+        "Garnet.Data": "1.0.0-*",
         "Garnet.Services": "1.0.0-*",
         "Microsoft.AspNet.Mvc": "6.0.0-beta4",
         "Microsoft.AspNet.Server.IIS": "1.0.0-beta4",

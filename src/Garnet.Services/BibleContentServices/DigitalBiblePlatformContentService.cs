@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Garnet.Services.BibleContent.Common
+namespace Garnet.Services.BibleContentServices
 {
-    public abstract class DigitalBiblePlatformContentService : BibleContentService
+    public abstract class DigitalBiblePlatformContentService
     {
         private readonly string _apiKey;
         private const string MediaType = "DA"; // only digital audio for now
@@ -147,13 +147,13 @@ namespace Garnet.Services.BibleContent.Common
 
         private char GetCollectionId(BookGroup group)
         {
-            if (group.Parent == EntireBible)
+            if (group.Parent == BookGroup.EntireBible)
             {
-                if (group == OldTestament)
+                if (group == BookGroup.OldTestament)
                 {
                     return 'O';
                 }
-                if (group == NewTestament)
+                if (group == BookGroup.NewTestament)
                 {
                     return 'N';
                 }

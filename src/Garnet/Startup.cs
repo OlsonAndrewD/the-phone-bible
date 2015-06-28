@@ -3,6 +3,7 @@ using Microsoft.AspNet.Hosting;
 using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
+using Garnet.DataAccess;
 using Garnet.Services;
 using Garnet.Api.TwilioRequestHandlers;
 
@@ -41,7 +42,7 @@ namespace Garnet.Api
             services.AddTransient<IBrowserFactory, BrowserFactory>();
 
             services.ConfigureApplicationServices(_configuration.Get("DigitalBiblePlatform:ApiKey"));
-            //services.ConfigureApplicationDataAccess(_configuration);
+            services.ConfigureApplicationDataAccess(_configuration.Get("Redis:ConnectionString"));
         }
 
         // Configure is called after ConfigureServices is called.

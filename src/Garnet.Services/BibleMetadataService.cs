@@ -1,11 +1,11 @@
-﻿using System.Linq;
+﻿using Garnet.Domain.Entities;
+using Garnet.Domain.Services;
 using System.Collections.Generic;
-using Garnet.Domain.Entities;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace Garnet.Services
 {
-    public abstract class BibleContentService
+    public class BibleMetadataService : IBibleMetadataService
     {
         public Chapter GetDefaultChapter()
         {
@@ -49,13 +49,13 @@ namespace Garnet.Services
 
         public BookGroup GetGroup(string groupName = null)
         {
-            groupName = groupName ?? EntireBible.Name;
+            groupName = groupName ?? BookGroup.EntireBible.Name;
             return BookGroups.FirstOrDefault(x => x.Name == groupName);
         }
 
         public IEnumerable<BookGroup> GetChildGroups(string parentGroupName)
         {
-            parentGroupName = parentGroupName ?? EntireBible.Name;
+            parentGroupName = parentGroupName ?? BookGroup.EntireBible.Name;
             return BookGroups.Where(x => x.Parent != null && x.Parent.Name == parentGroupName);
         }
 
@@ -71,44 +71,38 @@ namespace Garnet.Services
             }
         }
 
-        protected static readonly BookGroup EntireBible = new BookGroup { Name = "The Bible" };
-
-        protected static readonly BookGroup OldTestament = 
-            new BookGroup { Parent = EntireBible, Name = "Old Testament" };
         private static readonly BookGroup BooksOfMoses =
-            new BookGroup { Parent = OldTestament, Name = "Books of Moses" };
-        private static readonly BookGroup HistoricalBooks = 
-            new BookGroup { Parent = OldTestament, Name = "Historical Books" };
-        private static readonly BookGroup PoetryAndWisdom = 
-            new BookGroup { Parent = OldTestament, Name = "Poetry and Wisdom" };
-        private static readonly BookGroup MajorProphets = 
-            new BookGroup { Parent = OldTestament, Name = "Major Prophets" };
-        private static readonly BookGroup MinorProphets = 
-            new BookGroup { Parent = OldTestament, Name = "Minor Prophets" };
+            new BookGroup { Parent = BookGroup.OldTestament, Name = "Books of Moses" };
+        private static readonly BookGroup HistoricalBooks =
+            new BookGroup { Parent = BookGroup.OldTestament, Name = "Historical Books" };
+        private static readonly BookGroup PoetryAndWisdom =
+            new BookGroup { Parent = BookGroup.OldTestament, Name = "Poetry and Wisdom" };
+        private static readonly BookGroup MajorProphets =
+            new BookGroup { Parent = BookGroup.OldTestament, Name = "Major Prophets" };
+        private static readonly BookGroup MinorProphets =
+            new BookGroup { Parent = BookGroup.OldTestament, Name = "Minor Prophets" };
 
-        protected static readonly BookGroup NewTestament =
-            new BookGroup { Parent = EntireBible, Name = "New Testament" };
-        private static readonly BookGroup GospelsAndActs = 
-            new BookGroup { Parent = NewTestament, Name = "Gospels and Acts" };
-        private static readonly BookGroup PaulsLetters = 
-            new BookGroup { Parent = NewTestament, Name = "Paul's Letters" };
-        private static readonly BookGroup GeneralLetters = 
-            new BookGroup { Parent = NewTestament, Name = "General Letters" };
+        private static readonly BookGroup GospelsAndActs =
+            new BookGroup { Parent = BookGroup.NewTestament, Name = "Gospels and Acts" };
+        private static readonly BookGroup PaulsLetters =
+            new BookGroup { Parent = BookGroup.NewTestament, Name = "Paul's Letters" };
+        private static readonly BookGroup GeneralLetters =
+            new BookGroup { Parent = BookGroup.NewTestament, Name = "General Letters" };
         private static readonly BookGroup Apocalyptic =
-            new BookGroup { Parent = NewTestament, Name = "Apocalyptic" };
+            new BookGroup { Parent = BookGroup.NewTestament, Name = "Apocalyptic" };
 
         private static readonly IEnumerable<BookGroup> BookGroups = new[]
         {
-            EntireBible,
+            BookGroup.EntireBible,
 
-            OldTestament,
+            BookGroup.OldTestament,
             BooksOfMoses,
             HistoricalBooks,
             PoetryAndWisdom,
             MajorProphets,
             MinorProphets,
 
-            NewTestament,
+            BookGroup.NewTestament,
             GospelsAndActs,
             PaulsLetters,
             GeneralLetters,

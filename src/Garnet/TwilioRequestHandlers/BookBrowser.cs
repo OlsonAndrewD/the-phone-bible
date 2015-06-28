@@ -11,15 +11,13 @@ namespace Garnet.Api.TwilioRequestHandlers
     public class BookBrowser : Browser
     {
         private readonly IUserService _userService;
-        private readonly IContentService _contentService;
         private readonly Book _book;
 
-        public BookBrowser(Book book, IUserService userService, IContentService contentService)
+        public BookBrowser(Book book, IUserService userService)
             : base(book.Group.GetTopmostAncestor().Name)
         {
             _book = book;
             _userService = userService;
-            _contentService = contentService;
         }
 
         protected override string Name
