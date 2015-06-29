@@ -10,6 +10,7 @@ namespace Garnet.DataAccess
         {
             services.AddSingleton(serviceProvider =>
                 ConnectionMultiplexer.Connect(redisConnectionString));
+            services.AddTransient<IShortUrlRepository, ShortUrlRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
         }
     }

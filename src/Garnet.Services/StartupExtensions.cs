@@ -14,6 +14,7 @@ namespace Garnet.Services
                     serviceProvider.GetRequiredService<IUserService>(),
                     serviceProvider.GetRequiredService<IBibleMetadataService>(),
                     digitalBiblePlatformApiKey));
+            services.AddTransient<IShortUrlService, ShortUrlService>();
             services.AddTransient<IUserService, UserService>();
         }
     }

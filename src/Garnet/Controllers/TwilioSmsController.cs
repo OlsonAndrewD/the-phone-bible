@@ -1,7 +1,10 @@
 ﻿using Garnet.Api.ActionResults;
 using Garnet.Api.Routes;
+using Garnet.Domain.Entities;
 using Garnet.Domain.Services;
+using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace Garnet.Api.Controllers
@@ -12,12 +15,14 @@ namespace Garnet.Api.Controllers
         private readonly IUserService _userService;
         private readonly IBibleMetadataService _bibleMetadataService;
         private readonly IContentService _contentService;
+        private readonly IShortUrlService _shortUrlService;
 
-        public TwilioSmsController(IUserService userService, IBibleMetadataService bibleMetadataService, IContentService contentService)
+        public TwilioSmsController(IUserService userService, IBibleMetadataService bibleMetadataService, IContentService contentService, IShortUrlService shortUrlService)
         {
             _userService = userService;
             _bibleMetadataService = bibleMetadataService;
             _contentService = contentService;
+            _shortUrlService = shortUrlService;
         }
 
         [Route("response")]
@@ -61,12 +66,25 @@ namespace Garnet.Api.Controllers
             var contentUrl = await getContentUrlTask;
             var copyrightInfo = await getCopyrightInfoTask;
 
+            var shortCode = await _shortUrlService.GetOrCreateShortCodeAsync(contentUrl);
+
             var responseMessage = string.Format("{0}: {1} {2}",
                 string.Join(" ", nextChapter.Book.Name, nextChapter.ChapterNumber),
-                contentUrl,
+                CreateShortUrl(nextChapter, shortCode),
                 copyrightInfo);
 
             return new TwilioResponseResult(x => x.Message(responseMessage));
+        }
+
+        private string CreateShortUrl(Chapter chapter, string shortCode)
+        {
+            var uriBuilder = new UriBuilder(string.Join("://", Request.Scheme, Request.Host.Value));
+            uriBuilder.Path = string.Join("/",
+                AudioRoutes.Root,
+                chapter.Book.DbpId,
+                chapter.ChapterNumber,
+                shortCode);
+            return uriBuilder.Uri.ToString();
         }
     }
 }
