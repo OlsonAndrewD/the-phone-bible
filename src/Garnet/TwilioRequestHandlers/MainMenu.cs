@@ -1,5 +1,6 @@
 ﻿using Garnet.Api.ActionResults;
 using Garnet.Api.Extensions;
+using Garnet.Api.Routes;
 using Garnet.Domain.Services;
 using System.Threading.Tasks;
 
@@ -25,7 +26,7 @@ namespace Garnet.Api.TwilioRequestHandlers
                 x.AliceSay(string.Concat("Press 2 to hear the next chapter."));
                 x.AliceSay(string.Concat("Press 3 to choose a different chapter."));
                 x.EndGather();
-                x.Redirect(Routes.MainMenu, "get");
+                x.Redirect(TwilioVoiceRoutes.MainMenu, "get");
             });
         }
 
@@ -51,11 +52,11 @@ namespace Garnet.Api.TwilioRequestHandlers
             }
             else if (selection == "3")
             {
-                return new TwilioRedirectResult(Routes.Browse);
+                return new TwilioRedirectResult(TwilioVoiceRoutes.Browse);
             }
 
             // TODO: Prevent infinite loop.
-            return new TwilioRedirectResult(Routes.MainMenu);
+            return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Garnet.Api.ActionResults;
 using Garnet.Api.Extensions;
+using Garnet.Api.Routes;
 using Garnet.Api.TwilioRequestHandlers;
 using Garnet.Domain.Services;
 using Microsoft.AspNet.Mvc;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Garnet.Api.Controllers
 {
-    [Route(Routes.Root)]
+    [Route(TwilioVoiceRoutes.Root)]
     public class TwilioVoiceController : Controller
     {
         private readonly IUserService _userService;
@@ -26,7 +27,7 @@ namespace Garnet.Api.Controllers
             _browserFactory = browserFactory;
         }
 
-        [Route(Routes.Start)]
+        [Route(TwilioVoiceRoutes.Start)]
         [HttpGet]
         public IActionResult Start()
         {
@@ -35,18 +36,18 @@ namespace Garnet.Api.Controllers
                 x.BeginGather(new { timeout = 2, finishOnKey = '*' /* just so # will POST instead of falling through */ });
                 x.AliceSay("For main menu, press pound anytime.");
                 x.EndGather();
-                x.Redirect(Routes.CurrentContent, "get");
+                x.Redirect(TwilioVoiceRoutes.CurrentContent, "get");
             });
         }
 
-        [Route(Routes.Start)]
+        [Route(TwilioVoiceRoutes.Start)]
         [HttpPost]
         public IActionResult HandleStartInput([FromForm(Name = "Digits")] string digits)
         {
-            return new TwilioRedirectResult(digits == "#" ? Routes.MainMenu : Routes.CurrentContent);
+            return new TwilioRedirectResult(digits == "#" ? TwilioVoiceRoutes.MainMenu : TwilioVoiceRoutes.CurrentContent);
         }
 
-        [Route(Routes.CurrentContent)]
+        [Route(TwilioVoiceRoutes.CurrentContent)]
         [HttpGet]
         public async Task<IActionResult> GetCurrentContent([FromQuery(Name = "From")] string fromPhoneNumber)
         {
@@ -67,25 +68,25 @@ namespace Garnet.Api.Controllers
                     x.AliceSay(string.Concat("Copyright: ", copyrightInfo));
                 }
                 x.EndGather();
-                x.Redirect(Routes.MainMenu, "get");
+                x.Redirect(TwilioVoiceRoutes.MainMenu, "get");
             });
         }
 
-        [Route(Routes.CurrentContent)]
+        [Route(TwilioVoiceRoutes.CurrentContent)]
         [HttpPost]
         public IActionResult InterruptCurrentContent()
         {
-            return new TwilioRedirectResult(Routes.MainMenu);
+            return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
         }
 
-        [Route(Routes.MainMenu)]
+        [Route(TwilioVoiceRoutes.MainMenu)]
         [HttpGet]
         public IActionResult GetMainMenu()
         {
             return _mainMenu.Get();
         }
 
-        [Route(Routes.MainMenu)]
+        [Route(TwilioVoiceRoutes.MainMenu)]
         [HttpPost]
         public async Task<IActionResult> HandleMainMenuSelection(
             [FromForm(Name = "From")] string phoneNumber, 
@@ -94,7 +95,7 @@ namespace Garnet.Api.Controllers
             return await _mainMenu.HandleSelection(phoneNumber, selection);
         }
 
-        [Route(Routes.Browse)]
+        [Route(TwilioVoiceRoutes.Browse)]
         [HttpGet]
         public async Task<IActionResult> Browse(
             [FromQuery(Name = "From")] string phoneNumber, 
@@ -107,10 +108,10 @@ namespace Garnet.Api.Controllers
                 return await browser.HandleBrowseAsync(phoneNumber, navigatingUp);
             }
 
-            return new TwilioRedirectResult(Routes.MainMenu);
+            return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
         }
 
-        [Route(Routes.Browse)]
+        [Route(TwilioVoiceRoutes.Browse)]
         [HttpPost]
         public async Task<IActionResult> HandleBrowseSelection(
             [FromForm(Name = "From")] string fromPhoneNumber,
@@ -123,13 +124,13 @@ namespace Garnet.Api.Controllers
                 return await browser.HandleSelection(fromPhoneNumber, selection);
             }
 
-            return new TwilioRedirectResult(Routes.MainMenu);
+            return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
         }
 
         internal static string GetBrowseUrl(string bookOrGroupName, bool navigatingUp = false)
         {
             var url = string.Concat(
-                Routes.Browse, "?bookOrGroupName=", WebUtility.UrlEncode(bookOrGroupName));
+                TwilioVoiceRoutes.Browse, "?bookOrGroupName=", WebUtility.UrlEncode(bookOrGroupName));
 
             if (navigatingUp)
             {

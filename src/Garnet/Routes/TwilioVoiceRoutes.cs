@@ -1,6 +1,6 @@
-﻿namespace Garnet.Api
+﻿namespace Garnet.Api.Routes
 {
-    static class Routes
+    static class TwilioVoiceRoutes
     {
         public const string Root = "api/twilio/voice";
         public const string Start = "start";

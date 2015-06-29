@@ -1,6 +1,7 @@
 ﻿using Garnet.Api.ActionResults;
 using Garnet.Api.Controllers;
 using Garnet.Api.Extensions;
+using Garnet.Api.Routes;
 using System;
 using System.Threading.Tasks;
 using Twilio.TwiML;
@@ -66,7 +67,7 @@ namespace Garnet.Api.TwilioRequestHandlers
         {
             if (selection == "#")
             {
-                return new TwilioRedirectResult(Routes.MainMenu);
+                return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
             }
 
             if (selection == "*")

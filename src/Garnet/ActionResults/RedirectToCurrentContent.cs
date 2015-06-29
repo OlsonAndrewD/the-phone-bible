@@ -1,4 +1,5 @@
 ﻿using Garnet.Api.Extensions;
+using Garnet.Api.Routes;
 
 namespace Garnet.Api.ActionResults
 {
@@ -8,7 +9,7 @@ namespace Garnet.Api.ActionResults
             : base(x =>
             {
                 x.AliceSay("One moment please.");
-                x.Redirect(Routes.CurrentContent, "get");
+                x.Redirect(TwilioVoiceRoutes.CurrentContent, "get");
             })
         {
         }
