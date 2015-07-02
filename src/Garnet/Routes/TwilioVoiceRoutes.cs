@@ -7,5 +7,6 @@
         public const string CurrentContent = "current-content";
         public const string MainMenu = "main-menu";
         public const string Browse = "browse";
+        public const string TranslationMenu = "translation-menu";
     }
 }

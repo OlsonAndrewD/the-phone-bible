@@ -31,6 +31,39 @@ namespace Garnet.Services.BibleContentServices
         protected abstract string VersionCode { get; }
         protected abstract bool IsDramaType { get; }
 
+        public async Task<IEnumerable<AudioVolume>> GetAvailableVolumesAsync()
+        {
+            var restClient = CreateDbtRestClient();
+            var request = new RestRequest("library/volume");
+            request.AddParameter("media", "audio");
+            request.AddParameter("delivery", "mobile");
+            request.AddParameter("language_family_code", "ENG");
+
+            var response = await restClient.ExecuteGetTaskAsync<List<Volume>>(request);
+            return response.Data
+                .Select(x => new
+                {
+                    VersionName = x.VersionName.Trim(),
+                    IsDramatic = (x.MediaType ?? string.Empty).ToLowerInvariant() == "drama",
+                    CollectionType = x.DamId[6]
+                })
+                .GroupBy(x => new { x.VersionName, x.IsDramatic })
+                .Select(x => new AudioVolume
+                {
+                    VersionName = x.Key.VersionName,
+                    IsDramatic = x.Key.IsDramatic,
+                    IncludesOldTestament = x.Any(y => y.CollectionType == 'O'),
+                    IncludesNewTestament = x.Any(y => y.CollectionType == 'N')
+                });
+        }
+
+        public class Volume
+        {
+            public string DamId { get; set; }
+            public string VersionName { get; set; }
+            public string MediaType { get; set; }
+        }
+
         public Task<string> GetContentUrlAsync(User user)
         {
             var chapter = _bibleMetadataService.GetChapterByNumber(user.CurrentChapterNumber);

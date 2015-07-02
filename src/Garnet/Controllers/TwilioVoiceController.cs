@@ -2,9 +2,12 @@
 using Garnet.Api.Extensions;
 using Garnet.Api.Routes;
 using Garnet.Api.TwilioRequestHandlers;
+using Garnet.Domain.Entities;
 using Garnet.Domain.Services;
 using Microsoft.AspNet.Mvc;
+using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Garnet.Api.Controllers
@@ -81,9 +84,9 @@ namespace Garnet.Api.Controllers
 
         [Route(TwilioVoiceRoutes.MainMenu)]
         [HttpGet]
-        public IActionResult GetMainMenu()
+        public async Task<IActionResult> GetMainMenu([FromQuery(Name = "From")] string fromPhoneNumber)
         {
-            return _mainMenu.Get();
+            return await _mainMenu.Get(fromPhoneNumber);
         }
 
         [Route(TwilioVoiceRoutes.MainMenu)]
@@ -172,6 +175,48 @@ namespace Garnet.Api.Controllers
             }
 
             return null;
+        }
+
+        [Route(TwilioVoiceRoutes.TranslationMenu)]
+        [HttpGet]
+        public async Task<IActionResult> TranslationMenu()
+        {
+            var volumes = await _contentService.GetAvailableVolumesAsync();
+            return new TwilioResponseResult(x =>
+            {
+                x.BeginGather(new { numDigits = 1 });
+
+                var optionNumber = 1;
+                foreach (var volumeDescription in volumes.Select(GetDescription))
+                {
+                    x.AliceSay("For " + volumeDescription + ", press " + optionNumber++ + ".");
+                }
+
+                x.EndGather();
+            });
+        }
+
+        private static string GetDescription(AudioVolume volume)
+        {
+            var stringBuilder = new StringBuilder();
+
+            if (volume.IsDramatic)
+            {
+                stringBuilder.Append("dramatic ");
+            }
+
+            stringBuilder.Append(volume.VersionName);
+
+            if (volume.IncludesOldTestament && !volume.IncludesNewTestament)
+            {
+                stringBuilder.Append(" old testament");
+            }
+            if (!volume.IncludesOldTestament && volume.IncludesNewTestament)
+            {
+                stringBuilder.Append(" new testament");
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

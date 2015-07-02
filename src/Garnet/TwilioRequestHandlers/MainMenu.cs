@@ -17,14 +17,19 @@ namespace Garnet.Api.TwilioRequestHandlers
             _bibleMetadataService = bibleMetadataService;
         }
 
-        public TwilioResponseResult Get()
+        public async Task<TwilioResponseResult> Get(string phoneNumber)
         {
+            var user = await _userService.GetOrCreateAsync(phoneNumber);
+            var currentChapter = _bibleMetadataService.GetChapterByNumber(user.CurrentChapterNumber);
+            var nextChapter = _bibleMetadataService.GetChapterAfter(currentChapter);
+
             return new TwilioResponseResult(x =>
             {
                 x.BeginGather(new { numDigits = 1 });
-                x.AliceSay(string.Concat("Press 1 to hear the current chapter."));
-                x.AliceSay(string.Concat("Press 2 to hear the next chapter."));
-                x.AliceSay(string.Concat("Press 3 to choose a different chapter."));
+                x.AliceSay(string.Format("Press 1 to hear the current chapter, {0}.", currentChapter));
+                x.AliceSay(string.Format("Press 2 to hear the next chapter, {0}.", nextChapter));
+                x.AliceSay("Press 3 to choose a different chapter.");
+                x.AliceSay("Press 4 to choose a translation.");
                 x.EndGather();
                 x.Redirect(TwilioVoiceRoutes.MainMenu, "get");
             });
@@ -53,6 +58,10 @@ namespace Garnet.Api.TwilioRequestHandlers
             else if (selection == "3")
             {
                 return new TwilioRedirectResult(TwilioVoiceRoutes.Browse);
+            }
+            else if (selection == "4")
+            {
+                return new TwilioRedirectResult(TwilioVoiceRoutes.TranslationMenu);
             }
 
             // TODO: Prevent infinite loop.
