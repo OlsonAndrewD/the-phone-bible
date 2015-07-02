@@ -1,6 +1,7 @@
 ﻿using Garnet.Domain.Repositories;
 using StackExchange.Redis;
 using System.Threading.Tasks;
+using System;
 
 namespace Garnet.DataAccess
 {
@@ -25,15 +26,23 @@ namespace Garnet.DataAccess
 
         public async Task SetShortCodeAsync(string longUrl, string shortCode)
         {
-            var tasks = new[] {
-                _redis.GetDatabase().StringSetAsync(GetLongUrlKey(longUrl), shortCode),
-                _redis.GetDatabase().StringSetAsync(GetShortCodeKey(shortCode), longUrl)
+            var db = _redis.GetDatabase();
+            var longUrlKey = GetLongUrlKey(longUrl);
+            var shortCodeKey = GetShortCodeKey(shortCode);
+
+            var setKeyTasks = new[] {
+                db.StringSetAsync(longUrlKey, shortCode),
+                db.StringSetAsync(shortCodeKey, longUrl)
             };
 
-            foreach(var task in tasks)
+            foreach(var task in setKeyTasks)
             {
                 await task;
             }
+
+            // Don't wait for these.
+            db.KeyExpireAsync(longUrlKey, TimeSpan.FromDays(2));
+            db.KeyExpireAsync(shortCodeKey, TimeSpan.FromDays(2));
         }
 
         private string GetShortCodeKey(string url)
