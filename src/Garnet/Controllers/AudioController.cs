@@ -15,10 +15,14 @@ namespace Garnet.Api.Controllers
             _shortUrlService = shortUrlService;
         }
 
-        [Route("{bookId}/{chapterNumber}/{shortCode}")]
+        [Route("{shortCode}")]
         public async Task<IActionResult> GetAudio(string shortCode)
         {
             var longUrl = await _shortUrlService.GetLongUrlAsync(shortCode);
+            if (longUrl == null)
+            {
+                return new HttpNotFoundResult();
+            }
             return new RedirectResult(longUrl);
         }
     }
