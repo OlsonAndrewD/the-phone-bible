@@ -52,7 +52,7 @@ namespace Garnet.Api.TwilioRequestHandlers
                 int chapterNumber;
                 if (int.TryParse(selection, out chapterNumber))
                 {
-                    user.CurrentChapterNumber = _bibleMetadataService.GetChapterNumber(
+                    user.ChapterNumber = _bibleMetadataService.GetChapterNumber(
                         new Chapter
                         {
                             Book = _book,

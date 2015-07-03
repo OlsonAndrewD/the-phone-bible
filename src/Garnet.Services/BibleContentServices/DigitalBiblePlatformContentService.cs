@@ -1,4 +1,5 @@
 ﻿using Garnet.Domain.Entities;
+using Garnet.Domain.Enums;
 using Garnet.Domain.Services;
 using RestSharp;
 using System;
@@ -48,12 +49,25 @@ namespace Garnet.Services.BibleContentServices
                     CollectionType = x.DamId[6]
                 })
                 .GroupBy(x => new { x.VersionName, x.IsDramatic })
-                .Select(x => new AudioVolume
+                .Where(x => x.Any(y => y.CollectionType == 'O' || y.CollectionType == 'N'))
+                .Select(x =>
                 {
-                    VersionName = x.Key.VersionName,
-                    IsDramatic = x.Key.IsDramatic,
-                    IncludesOldTestament = x.Any(y => y.CollectionType == 'O'),
-                    IncludesNewTestament = x.Any(y => y.CollectionType == 'N')
+                    CollectionType collectionType = CollectionType.Complete;
+                    var includesOldTestament = x.Any(y => y.CollectionType == 'O');
+                    var includesNewTestament = x.Any(y => y.CollectionType == 'N');
+                    if (includesOldTestament ^ includesNewTestament)
+                    {
+                        collectionType = includesNewTestament ?
+                            CollectionType.NewTestamentOnly :
+                            CollectionType.OldTestamentOnly;
+                    }
+
+                    return new AudioVolume
+                    {
+                        VersionName = x.Key.VersionName,
+                        IsDramatic = x.Key.IsDramatic,
+                        CollectionType = collectionType
+                    };
                 });
         }
 
@@ -66,14 +80,14 @@ namespace Garnet.Services.BibleContentServices
 
         public Task<string> GetContentUrlAsync(User user)
         {
-            var chapter = _bibleMetadataService.GetChapterByNumber(user.CurrentChapterNumber);
+            var chapter = _bibleMetadataService.GetChapterByNumber(user.ChapterNumber);
             return Task.WhenAll(GetBaseAudioUrl(), GetAudioUrl(chapter))
                 .ContinueWith(x => string.Join("/", x.Result));
         }
 
         public async Task<string> GetCopyrightInfoAsync(User user)
         {
-            var chapter = _bibleMetadataService.GetChapterByNumber(user.CurrentChapterNumber);
+            var chapter = _bibleMetadataService.GetChapterByNumber(user.ChapterNumber);
 
             var restClient = CreateDbtRestClient();
             var request = new RestRequest("library/metadata");

@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using Garnet.Domain.Entities;
+using System.Threading.Tasks;
 
 namespace Garnet.Domain.Repositories
 {
     public interface IUserRepository
     {
-        Task SetUserPhoneNumber(string userId, string phoneNumber);
-        Task<string> GetUserIdByPhoneNumberAsync(string phoneNumber);
-        Task<int?> GetCurrentChapterNumber(string userId);
-        Task SetCurrentChapterNumber(string userId, int chapterNumber);
+        Task<User> GetAsync(string id);
+        Task<User> GetByPhoneNumberAsync(string phoneNumber);
+        Task<User> AddOrUpdateAsync(User user);
     }
 }

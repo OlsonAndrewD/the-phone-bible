@@ -3,6 +3,7 @@ using Garnet.Api.Extensions;
 using Garnet.Api.Routes;
 using Garnet.Api.TwilioRequestHandlers;
 using Garnet.Domain.Entities;
+using Garnet.Domain.Enums;
 using Garnet.Domain.Services;
 using Microsoft.AspNet.Mvc;
 using System.Linq;
@@ -150,7 +151,7 @@ namespace Garnet.Api.Controllers
                 var user = await _userService.GetAsync(phoneNumber);
                 if (user != null)
                 {
-                    var chapter = _bibleMetadataService.GetChapterByNumber(user.CurrentChapterNumber);
+                    var chapter = _bibleMetadataService.GetChapterByNumber(user.ChapterNumber);
                     if (chapter.Book.NumberOfChapters == 1)
                     {
                         return _browserFactory.CreateGroupBrowser(chapter.Book.Group);
@@ -207,13 +208,14 @@ namespace Garnet.Api.Controllers
 
             stringBuilder.Append(volume.VersionName);
 
-            if (volume.IncludesOldTestament && !volume.IncludesNewTestament)
+            switch (volume.CollectionType)
             {
-                stringBuilder.Append(" old testament");
-            }
-            if (!volume.IncludesOldTestament && volume.IncludesNewTestament)
-            {
-                stringBuilder.Append(" new testament");
+                case CollectionType.OldTestamentOnly:
+                    stringBuilder.Append(" old testament");
+                    break;
+                case CollectionType.NewTestamentOnly:
+                    stringBuilder.Append(" new testament");
+                    break;
             }
 
             return stringBuilder.ToString();

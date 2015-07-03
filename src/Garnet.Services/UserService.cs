@@ -9,6 +9,7 @@ namespace Garnet.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private const string DefaultAudioVolumeCode = "ENGKJV";
 
         public UserService(IUserRepository userRepository)
         {
@@ -22,10 +23,8 @@ namespace Garnet.Services
                 if (user.Id == null)
                 {
                     user.Id = Guid.NewGuid().ToString();
-                    await _userRepository.SetUserPhoneNumber(user.Id, user.PhoneNumber);
                 }
-
-                await _userRepository.SetCurrentChapterNumber(user.Id, user.CurrentChapterNumber);
+                await _userRepository.AddOrUpdateAsync(user);
             }
 
             return user;
@@ -33,20 +32,7 @@ namespace Garnet.Services
 
         public async Task<User> GetAsync(string phoneNumber)
         {
-            var userId = await _userRepository.GetUserIdByPhoneNumberAsync(phoneNumber);
-            if (userId == null)
-            {
-                return null;
-            }
-
-            var currentChapterNumber = await _userRepository.GetCurrentChapterNumber(userId);
-
-            return new User
-            {
-                Id = userId,
-                PhoneNumber = phoneNumber,
-                CurrentChapterNumber = currentChapterNumber ?? 1
-            };
+            return await _userRepository.GetByPhoneNumberAsync(phoneNumber);
         }
 
         public async Task<User> GetOrCreateAsync(string phoneNumber)
@@ -57,7 +43,8 @@ namespace Garnet.Services
                 user = await AddOrUpdateAsync(new User
                 {
                     PhoneNumber = phoneNumber,
-                    CurrentChapterNumber = 1
+                    ChapterNumber = 1,
+                    AudioVolumeCode = DefaultAudioVolumeCode
                 });
             }
             return user;

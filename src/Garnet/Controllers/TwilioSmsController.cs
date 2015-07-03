@@ -54,17 +54,17 @@ namespace Garnet.Api.Controllers
 
         private async Task<string> GetCurrent(string fromPhoneNumber)
         {
-            return await UpdateUserAndGetResponseMessage(fromPhoneNumber, x => x.CurrentChapterNumber);
+            return await UpdateUserAndGetResponseMessage(fromPhoneNumber, x => x.ChapterNumber);
         }
 
         private async Task<string> GetPrevious(string fromPhoneNumber)
         {
-            return await UpdateUserAndGetResponseMessage(fromPhoneNumber, x => x.CurrentChapterNumber - 1);
+            return await UpdateUserAndGetResponseMessage(fromPhoneNumber, x => x.ChapterNumber - 1);
         }
 
         private async Task<string> GetNext(string fromPhoneNumber)
         {
-            return await UpdateUserAndGetResponseMessage(fromPhoneNumber, x => x.CurrentChapterNumber + 1);
+            return await UpdateUserAndGetResponseMessage(fromPhoneNumber, x => x.ChapterNumber + 1);
         }
 
         private async Task<string> UpdateUserAndGetResponseMessage(string fromPhoneNumber, Func<User, int> getNewChapterNumber)
@@ -87,9 +87,9 @@ namespace Garnet.Api.Controllers
                 newChapter = _bibleMetadataService.GetChapterByNumber(newChapterNumber);
             }
 
-            if (newChapterNumber != user.CurrentChapterNumber)
+            if (newChapterNumber != user.ChapterNumber)
             {
-                user.CurrentChapterNumber = newChapterNumber;
+                user.ChapterNumber = newChapterNumber;
 
                 // Fire and forget
                 _userService.AddOrUpdateAsync(user);
