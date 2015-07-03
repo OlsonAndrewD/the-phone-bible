@@ -5,8 +5,8 @@ namespace Garnet.Domain.Services
 {
     public interface IUserService
     {
-        Task<User> GetAsync(string id);
-        Task<User> GetOrCreateAsync(string id);
+        Task<User> GetByPhoneNumberAsync(string phoneNumber);
+        Task<User> GetByPhoneNumberOrCreateAsync(string phoneNumber);
         Task<User> AddOrUpdateAsync(User user);
     }
 }

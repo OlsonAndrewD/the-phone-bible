@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Garnet.Services.BibleContentServices
+namespace Garnet.Services
 {
-    public abstract class DigitalBiblePlatformContentService
+    public class DigitalBiblePlatformContentService : IContentService
     {
         private readonly string _apiKey;
         private const string MediaType = "DA"; // only digital audio for now
@@ -28,10 +28,6 @@ namespace Garnet.Services.BibleContentServices
             _apiKey = apiKey;
         }
 
-        protected abstract string LanguageCode { get; }
-        protected abstract string VersionCode { get; }
-        protected abstract bool IsDramaType { get; }
-
         public async Task<IEnumerable<AudioVolume>> GetAvailableVolumesAsync()
         {
             var restClient = CreateDbtRestClient();
@@ -44,11 +40,13 @@ namespace Garnet.Services.BibleContentServices
             return response.Data
                 .Select(x => new
                 {
+                    x.LanguageCode,
+                    x.VersionCode,
                     VersionName = x.VersionName.Trim(),
                     IsDramatic = (x.MediaType ?? string.Empty).ToLowerInvariant() == "drama",
                     CollectionType = x.DamId[6]
                 })
-                .GroupBy(x => new { x.VersionName, x.IsDramatic })
+                .GroupBy(x => new { x.LanguageCode, x.VersionCode, x.VersionName, x.IsDramatic })
                 .Where(x => x.Any(y => y.CollectionType == 'O' || y.CollectionType == 'N'))
                 .Select(x =>
                 {
@@ -64,6 +62,7 @@ namespace Garnet.Services.BibleContentServices
 
                     return new AudioVolume
                     {
+                        Code = string.Concat(x.Key.LanguageCode, x.Key.VersionCode),
                         VersionName = x.Key.VersionName,
                         IsDramatic = x.Key.IsDramatic,
                         CollectionType = collectionType
@@ -74,6 +73,8 @@ namespace Garnet.Services.BibleContentServices
         public class Volume
         {
             public string DamId { get; set; }
+            public string LanguageCode { get; set; }
+            public string VersionCode { get; set; }
             public string VersionName { get; set; }
             public string MediaType { get; set; }
         }
@@ -81,7 +82,7 @@ namespace Garnet.Services.BibleContentServices
         public Task<string> GetContentUrlAsync(User user)
         {
             var chapter = _bibleMetadataService.GetChapterByNumber(user.ChapterNumber);
-            return Task.WhenAll(GetBaseAudioUrl(), GetAudioUrl(chapter))
+            return Task.WhenAll(GetBaseAudioUrl(), GetAudioUrl(user, chapter))
                 .ContinueWith(x => string.Join("/", x.Result));
         }
 
@@ -91,7 +92,7 @@ namespace Garnet.Services.BibleContentServices
 
             var restClient = CreateDbtRestClient();
             var request = new RestRequest("library/metadata");
-            request.AddParameter("dam_id", GetDamId(chapter));
+            request.AddParameter("dam_id", GetDamId(user, chapter));
 
             var response = await restClient.ExecuteGetTaskAsync<List<CopyrightInfo>>(request);
             var copyrightInfo = response.Data.FirstOrDefault();
@@ -145,11 +146,11 @@ namespace Garnet.Services.BibleContentServices
             return uriBuilder.ToString();
         }
 
-        private async Task<string> GetAudioUrl(Chapter chapter)
+        private async Task<string> GetAudioUrl(User user, Chapter chapter)
         {
             var restClient = CreateDbtRestClient();
             var request = new RestRequest("audio/path");
-            request.AddParameter("dam_id", GetDamId(chapter));
+            request.AddParameter("dam_id", GetDamId(user, chapter));
             request.AddParameter("book_id", chapter.Book.DbpId);
             request.AddParameter("chapter_id", chapter.ChapterNumber);
 
@@ -164,13 +165,12 @@ namespace Garnet.Services.BibleContentServices
             return path.Path;
         }
 
-        private string GetDamId(Chapter chapter)
+        private string GetDamId(User user, Chapter chapter)
         {
             return string.Concat(
-                LanguageCode,
-                VersionCode,
+                user.AudioVolumeCode,
                 GetCollectionId(chapter),
-                IsDramaType ? '2' : '1',
+                user.IsDramaticAudioSelected ? '2' : '1',
                 MediaType);
         }
 

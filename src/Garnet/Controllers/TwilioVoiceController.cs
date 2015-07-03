@@ -6,6 +6,7 @@ using Garnet.Domain.Entities;
 using Garnet.Domain.Enums;
 using Garnet.Domain.Services;
 using Microsoft.AspNet.Mvc;
+using System;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -55,7 +56,7 @@ namespace Garnet.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCurrentContent([FromQuery(Name = "From")] string fromPhoneNumber)
         {
-            var user = await _userService.GetOrCreateAsync(fromPhoneNumber);
+            var user = await _userService.GetByPhoneNumberOrCreateAsync(fromPhoneNumber);
 
             var getContentUrlTask = _contentService.GetContentUrlAsync(user);
             var getCopyrightInfoTask = _contentService.GetCopyrightInfoAsync(user);
@@ -148,7 +149,7 @@ namespace Garnet.Api.Controllers
         {
             if (string.IsNullOrEmpty(bookOrGroupName))
             {
-                var user = await _userService.GetAsync(phoneNumber);
+                var user = await _userService.GetByPhoneNumberAsync(phoneNumber);
                 if (user != null)
                 {
                     var chapter = _bibleMetadataService.GetChapterByNumber(user.ChapterNumber);
@@ -180,12 +181,31 @@ namespace Garnet.Api.Controllers
 
         [Route(TwilioVoiceRoutes.TranslationMenu)]
         [HttpGet]
-        public async Task<IActionResult> TranslationMenu()
+        public async Task<IActionResult> TranslationMenu(
+            [FromQuery(Name = "From")] string phoneNumber)
         {
-            var volumes = await _contentService.GetAvailableVolumesAsync();
+            var userTask = _userService.GetByPhoneNumberOrCreateAsync(phoneNumber);
+            var volumesTask = _contentService.GetAvailableVolumesAsync();
+
+            var user = await userTask;
+            var volumes = (await volumesTask).ToList();
+
+            var selectedVolume = volumes.FirstOrDefault(x =>
+                x.Code == user.AudioVolumeCode &&
+                x.IsDramatic == user.IsDramaticAudioSelected);
+
+            var numDigits = volumes.Count == 0 ?
+                0 :
+                Convert.ToInt32(Math.Floor(Math.Log10(volumes.Count))) + 1;
+
             return new TwilioResponseResult(x =>
             {
-                x.BeginGather(new { numDigits = 1 });
+                x.BeginGather(new { numDigits = numDigits });
+
+                if (selectedVolume != null)
+                {
+                    x.AliceSay("Your current selection is " + GetDescription(selectedVolume) + ".");
+                }
 
                 var optionNumber = 1;
                 foreach (var volumeDescription in volumes.Select(GetDescription))
@@ -195,6 +215,39 @@ namespace Garnet.Api.Controllers
 
                 x.EndGather();
             });
+        }
+
+        [Route(TwilioVoiceRoutes.TranslationMenu)]
+        [HttpPost]
+        public async Task<IActionResult> TranslationMenu(
+            [FromForm(Name = "From")] string phoneNumber,
+            [FromForm(Name = "Digits")] string digits)
+        {
+            var userTask = _userService.GetByPhoneNumberOrCreateAsync(phoneNumber);
+            var volumesTask = _contentService.GetAvailableVolumesAsync();
+
+            var user = await userTask;
+            var volumes = await volumesTask;
+
+            int selectedOptionNumber;
+            if (int.TryParse(digits, out selectedOptionNumber))
+            {
+                var newSelectedVolume = volumes.Skip(selectedOptionNumber - 1).FirstOrDefault();
+                if (newSelectedVolume != null)
+                {
+                    user.AudioVolumeCode = newSelectedVolume.Code;
+                    user.IsDramaticAudioSelected = newSelectedVolume.IsDramatic;
+                    await _userService.AddOrUpdateAsync(user);
+
+                    return new TwilioResponseResult(x =>
+                    {
+                        x.AliceSay("Selected " + GetDescription(newSelectedVolume));
+                        x.Redirect(TwilioVoiceRoutes.MainMenu);
+                    });
+                }
+            }
+
+            return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
         }
 
         private static string GetDescription(AudioVolume volume)

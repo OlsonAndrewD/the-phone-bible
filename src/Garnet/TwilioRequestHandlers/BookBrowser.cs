@@ -46,7 +46,7 @@ namespace Garnet.Api.TwilioRequestHandlers
 
         protected override async Task<TwilioResponseResult> HandleSelectionInternal(string phoneNumber, string selection)
         {
-            var user = await _userService.GetOrCreateAsync(phoneNumber);
+            var user = await _userService.GetByPhoneNumberOrCreateAsync(phoneNumber);
             if (user != null)
             {
                 int chapterNumber;

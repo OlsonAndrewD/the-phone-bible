@@ -19,7 +19,7 @@ namespace Garnet.Api.TwilioRequestHandlers
 
         public async Task<TwilioResponseResult> Get(string phoneNumber)
         {
-            var user = await _userService.GetOrCreateAsync(phoneNumber);
+            var user = await _userService.GetByPhoneNumberOrCreateAsync(phoneNumber);
             var currentChapter = _bibleMetadataService.GetChapterByNumber(user.ChapterNumber);
             var nextChapter = _bibleMetadataService.GetChapterAfter(currentChapter);
 
@@ -42,7 +42,7 @@ namespace Garnet.Api.TwilioRequestHandlers
 
             if (advanceToNextContent)
             {
-                var user = await _userService.GetOrCreateAsync(phoneNumber);
+                var user = await _userService.GetByPhoneNumberOrCreateAsync(phoneNumber);
                 user.ChapterNumber++;
                 if (_bibleMetadataService.GetChapterByNumber(user.ChapterNumber) == null)
                 {

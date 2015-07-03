@@ -30,14 +30,14 @@ namespace Garnet.Services
             return user;
         }
 
-        public async Task<User> GetAsync(string phoneNumber)
+        public async Task<User> GetByPhoneNumberAsync(string phoneNumber)
         {
             return await _userRepository.GetByPhoneNumberAsync(phoneNumber);
         }
 
-        public async Task<User> GetOrCreateAsync(string phoneNumber)
+        public async Task<User> GetByPhoneNumberOrCreateAsync(string phoneNumber)
         {
-            var user = await GetAsync(phoneNumber);
+            var user = await GetByPhoneNumberAsync(phoneNumber);
             if (user == null)
             {
                 user = await AddOrUpdateAsync(new User

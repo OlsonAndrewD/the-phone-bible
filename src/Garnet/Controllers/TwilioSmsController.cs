@@ -70,10 +70,10 @@ namespace Garnet.Api.Controllers
         private async Task<string> UpdateUserAndGetResponseMessage(string fromPhoneNumber, Func<User, int> getNewChapterNumber)
         {
             var newChapterNumber = 1;
-            var user = await _userService.GetAsync(fromPhoneNumber);
+            var user = await _userService.GetByPhoneNumberAsync(fromPhoneNumber);
             if (user == null)
             {
-                user = await _userService.GetOrCreateAsync(fromPhoneNumber);
+                user = await _userService.GetByPhoneNumberOrCreateAsync(fromPhoneNumber);
             }
             else
             {
