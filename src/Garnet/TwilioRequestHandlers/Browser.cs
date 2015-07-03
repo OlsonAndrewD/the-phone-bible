@@ -43,7 +43,8 @@ namespace Garnet.Api.TwilioRequestHandlers
                 {
                     action = TwilioVoiceController.GetBrowseUrl(Name),
                     numDigits = numDigits,
-                    timeout = 4
+                    timeout = 2,
+                    finishOnKey = ""
                 });
 
                 response.AliceSay(Name);
