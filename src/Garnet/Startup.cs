@@ -6,6 +6,8 @@ using Microsoft.Framework.Logging;
 using Garnet.DataAccess;
 using Garnet.Services;
 using Garnet.Api.TwilioRequestHandlers;
+using Microsoft.AspNet.Mvc;
+using Garnet.Api.Filters;
 
 namespace Garnet.Api
 {
@@ -36,7 +38,11 @@ namespace Garnet.Api
         // Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc()
+                .Configure<MvcOptions>(options =>
+                {
+                    options.Filters.Add(new GoToMainMenuExceptionFilter());
+                });
 
             services.AddTransient<MainMenu>();
             services.AddTransient<IBrowserFactory, BrowserFactory>();
