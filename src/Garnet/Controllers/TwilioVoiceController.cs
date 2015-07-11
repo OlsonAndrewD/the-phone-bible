@@ -19,18 +19,18 @@ namespace Garnet.Api.Controllers
     {
         private readonly IUserService _userService;
         private readonly IContentService _contentService;
-        private readonly MainMenu _mainMenu;
         private readonly IBrowserFactory _browserFactory;
         private readonly IBibleMetadataService _bibleMetadataService;
 
-        public TwilioVoiceController(IUserService userService, IBibleMetadataService bibleMetadataService, IContentService contentService, MainMenu mainMenu, IBrowserFactory browserFactory)
+        public TwilioVoiceController(IUserService userService, IBibleMetadataService bibleMetadataService, IContentService contentService, IBrowserFactory browserFactory)
         {
             _userService = userService;
             _bibleMetadataService = bibleMetadataService;
             _contentService = contentService;
-            _mainMenu = mainMenu;
             _browserFactory = browserFactory;
         }
+
+        #region Start
 
         [Route(TwilioVoiceRoutes.Start)]
         [HttpGet]
@@ -49,8 +49,14 @@ namespace Garnet.Api.Controllers
         [HttpPost]
         public IActionResult HandleStartInput([FromForm(Name = "Digits")] string digits)
         {
-            return new TwilioRedirectResult(digits == "#" ? TwilioVoiceRoutes.MainMenu : TwilioVoiceRoutes.CurrentContent);
+            return new TwilioRedirectResult(digits == "#" ?
+                TwilioVoiceRoutes.MainMenu :
+                TwilioVoiceRoutes.CurrentContent);
         }
+
+        #endregion
+
+        #region Current Content
 
         [Route(TwilioVoiceRoutes.CurrentContent)]
         [HttpGet]
@@ -73,6 +79,11 @@ namespace Garnet.Api.Controllers
                     x.AliceSay(string.Concat("Copyright: ", copyrightInfo));
                 }
                 x.EndGather();
+
+                x.BeginGather(new { action = TwilioVoiceRoutes.NextContentRequest, timeout = 3, finishOnKey = "" });
+                x.AliceSay("To advance to the next chapter, press 1.");
+                x.EndGather();
+
                 x.Redirect(TwilioVoiceRoutes.MainMenu, "get");
             });
         }
@@ -84,11 +95,44 @@ namespace Garnet.Api.Controllers
             return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
         }
 
+        [Route(TwilioVoiceRoutes.NextContentRequest)]
+        [HttpPost]
+        public async Task<IActionResult> AdvanceToNextContent(
+            [FromForm(Name = "From")] string phoneNumber, 
+            [FromForm(Name = "Digits")] string digits)
+        {
+            if (digits == "1")
+            {
+                await AdvanceToNextContent(phoneNumber);
+                return new RedirectToCurrentContent();
+            }
+
+            return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
+        }
+
+        #endregion
+
+        #region Main Menu
+
         [Route(TwilioVoiceRoutes.MainMenu)]
         [HttpGet]
         public async Task<IActionResult> GetMainMenu([FromQuery(Name = "From")] string fromPhoneNumber)
         {
-            return await _mainMenu.Get(fromPhoneNumber);
+            var user = await _userService.GetByPhoneNumberOrCreateAsync(fromPhoneNumber);
+            var currentChapter = _bibleMetadataService.GetChapterByNumber(user.ChapterNumber);
+            var nextChapter = _bibleMetadataService.GetChapterAfter(currentChapter);
+
+            return new TwilioResponseResult(x =>
+            {
+                x.BeginGather(new { numDigits = 1 });
+                x.AliceSay("Main Menu");
+                x.AliceSay(string.Format("Press 1 to hear {0}.", currentChapter));
+                x.AliceSay(string.Format("Press 2 to hear {0}.", nextChapter));
+                x.AliceSay("Press 3 to choose a different chapter.");
+                x.AliceSay("Press 4 to choose a translation.");
+                x.EndGather();
+                x.Redirect(TwilioVoiceRoutes.MainMenu, "get");
+            });
         }
 
         [Route(TwilioVoiceRoutes.MainMenu)]
@@ -97,8 +141,35 @@ namespace Garnet.Api.Controllers
             [FromForm(Name = "From")] string phoneNumber, 
             [FromForm(Name = "Digits")] string selection)
         {
-            return await _mainMenu.HandleSelection(phoneNumber, selection);
+            var redirectToContent = selection == "1" || selection == "2";
+            var advanceToNextContent = selection == "2";
+
+            if (advanceToNextContent)
+            {
+                await AdvanceToNextContent(phoneNumber);
+            }
+
+            if (redirectToContent)
+            {
+                return new RedirectToCurrentContent();
+            }
+            else if (selection == "3")
+            {
+                return new TwilioRedirectResult(TwilioVoiceRoutes.Browse);
+            }
+            else if (selection == "4")
+            {
+                return new TwilioRedirectResult(TwilioVoiceRoutes.TranslationMenu);
+            }
+
+            // TODO: Prevent infinite loop.
+
+            return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
         }
+
+        #endregion
+
+        #region Browse
 
         [Route(TwilioVoiceRoutes.Browse)]
         [HttpGet]
@@ -178,6 +249,10 @@ namespace Garnet.Api.Controllers
 
             return null;
         }
+
+        #endregion
+
+        #region Translation Menu
 
         [Route(TwilioVoiceRoutes.TranslationMenu)]
         [HttpGet]
@@ -272,6 +347,19 @@ namespace Garnet.Api.Controllers
             }
 
             return stringBuilder.ToString();
+        }
+
+        #endregion
+
+        private async Task AdvanceToNextContent(string phoneNumber)
+        {
+            var user = await _userService.GetByPhoneNumberOrCreateAsync(phoneNumber);
+            user.ChapterNumber++;
+            if (_bibleMetadataService.GetChapterByNumber(user.ChapterNumber) == null)
+            {
+                user.ChapterNumber = 1;
+            }
+            await _userService.AddOrUpdateAsync(user);
         }
     }
 }

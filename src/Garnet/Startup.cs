@@ -44,7 +44,6 @@ namespace Garnet.Api
                     options.Filters.Add(new GoToMainMenuExceptionFilter());
                 });
 
-            services.AddTransient<MainMenu>();
             services.AddTransient<IBrowserFactory, BrowserFactory>();
 
             services.ConfigureApplicationServices(_configuration.Get("DigitalBiblePlatform:ApiKey"));
