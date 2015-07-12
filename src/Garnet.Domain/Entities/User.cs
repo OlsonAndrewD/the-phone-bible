@@ -7,5 +7,6 @@
         public int ChapterNumber { get; set; }
         public string AudioVolumeCode { get; set; }
         public bool IsDramaticAudioSelected { get; set; }
+        public int? ReminderTimeInMinutes { get; set; }
     }
 }

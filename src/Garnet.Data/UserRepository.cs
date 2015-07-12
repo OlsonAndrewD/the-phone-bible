@@ -40,19 +40,33 @@ namespace Garnet.DataAccess
             { "phoneNumber", (user, value) => user.PhoneNumber = value },
             { "chapterNumber", (user, value) => user.ChapterNumber = (int)value },
             { "audioVolumeCode", (user, value) => user.AudioVolumeCode = value },
-            { "isDramaticAudioSelected", (user, value) => user.IsDramaticAudioSelected = (bool)value }
+            { "isDramaticAudioSelected", (user, value) => user.IsDramaticAudioSelected = (bool)value },
+            { "reminderTimeInMinutes", (user, value) => user.ReminderTimeInMinutes = value.IsNull ? (int?)null : (int)value }
         };
 
         public async Task<User> AddOrUpdateAsync(User user)
         {
             var db = _redis.GetDatabase();
-            await db.HashSetAsync(GetUserIdKey(user.Id), new[]
+
+            var hashEntries = new List<HashEntry>
             {
                 new HashEntry("phoneNumber", user.PhoneNumber),
                 new HashEntry("chapterNumber", user.ChapterNumber),
                 new HashEntry("audioVolumeCode", user.AudioVolumeCode),
-                new HashEntry("isDramaticAudioSelected", user.IsDramaticAudioSelected)
-            });
+                new HashEntry("isDramaticAudioSelected", user.IsDramaticAudioSelected),
+            };
+
+            if (user.ReminderTimeInMinutes != null)
+            {
+                hashEntries.Add(new HashEntry("reminderTimeInMinutes", user.ReminderTimeInMinutes));
+            }
+
+            var userIdKey = GetUserIdKey(user.Id);
+            await db.HashSetAsync(userIdKey, hashEntries.ToArray());
+            if (user.ReminderTimeInMinutes == null)
+            {
+                await db.HashDeleteAsync(userIdKey, "reminderTimeInMinutes");
+            }
             await db.StringSetAsync(GetPhoneNumberKey(user.PhoneNumber), user.Id);
             return user;
         }

@@ -9,5 +9,7 @@
         public const string MainMenu = "main-menu";
         public const string Browse = "browse";
         public const string TranslationMenu = "translation-menu";
+        public const string ReminderTime = "reminder-time";
+        public const string ClarifyReminderTime = "clarify-reminder-time";
     }
 }
