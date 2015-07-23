@@ -417,22 +417,36 @@ namespace Garnet.Api.Controllers
             }
 
             TimeSpan timeOfDay;
+            if (digits.Length > 0 && digits.Length <= 2)
+            {
+                int hours;
+                if (int.TryParse(digits, out hours))
+                {
+                    timeOfDay = TimeSpan.FromHours(hours);
+                    return await HandleValidSetTime(digits, user, timeOfDay);
+                }
+            }
             if (digits.Length > 2 && TimeSpan.TryParse(digits.Insert(digits.Length - 2, ":"), out timeOfDay))
             {
-                if (timeOfDay.Hours > 0 && timeOfDay.Hours <= 12)
-                {
-                    return new TwilioRedirectResult(
-                        TwilioVoiceRoutes.ClarifyReminderTime + "?time=" + WebUtility.UrlEncode(digits));
-                }
-                else
-                {
-                    user.ReminderTimeInMinutes = (int)timeOfDay.TotalMinutes;
-                    await _userService.AddOrUpdateAsync(user);
-                    return ReminderSetResponse(user.ReminderTimeInMinutes.Value);
-                }
+                return await HandleValidSetTime(digits, user, timeOfDay);
             }
 
             return DidNotUnderstandReminderSetResponse();
+        }
+
+        private async Task<IActionResult> HandleValidSetTime(string digits, User user, TimeSpan timeOfDay)
+        {
+            if (timeOfDay.Hours > 0 && timeOfDay.Hours <= 12)
+            {
+                return new TwilioRedirectResult(
+                    TwilioVoiceRoutes.ClarifyReminderTime + "?time=" + WebUtility.UrlEncode(digits));
+            }
+            else
+            {
+                user.ReminderTimeInMinutes = (int)timeOfDay.TotalMinutes;
+                await _userService.AddOrUpdateAsync(user);
+                return ReminderSetResponse(user.ReminderTimeInMinutes.Value);
+            }
         }
 
         #endregion
