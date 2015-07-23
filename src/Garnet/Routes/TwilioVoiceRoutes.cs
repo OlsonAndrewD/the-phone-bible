@@ -11,5 +11,6 @@
         public const string TranslationMenu = "translation-menu";
         public const string ReminderTime = "reminder-time";
         public const string ClarifyReminderTime = "clarify-reminder-time";
+        public const string LocalTime = "local-time";
     }
 }

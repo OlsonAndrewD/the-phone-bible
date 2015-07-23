@@ -46,8 +46,12 @@ namespace Garnet.Api
 
             services.AddTransient<IBrowserFactory, BrowserFactory>();
 
-            services.ConfigureApplicationServices(_configuration.Get("DigitalBiblePlatform:ApiKey"));
-            services.ConfigureApplicationDataAccess(_configuration.Get("Redis:ConnectionString"));
+            services.ConfigureApplicationServices(
+                _configuration.Get("DigitalBiblePlatform:ApiKey"), 
+                _configuration.Get("GoogleMaps:ApiKey"));
+
+            services.ConfigureApplicationDataAccess(
+                _configuration.Get("Redis:ConnectionString"));
         }
 
         // Configure is called after ConfigureServices is called.

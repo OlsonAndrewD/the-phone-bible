@@ -9,7 +9,8 @@
     "dependencies": {
         "Microsoft.Framework.DependencyInjection.Interfaces": "1.0.0-beta4",
         "Garnet.Domain": "1.0.0-*",
-        "RestSharp": "105.1.0"
+        "RestSharp": "105.1.0",
+        "Newtonsoft.Json": "7.0.1"
     },
 
     "frameworks": {

@@ -5,7 +5,7 @@ namespace Garnet.Services
 {
     public static class StartupExtensions
     {
-        public static void ConfigureApplicationServices(this IServiceCollection services, string digitalBiblePlatformApiKey)
+        public static void ConfigureApplicationServices(this IServiceCollection services, string digitalBiblePlatformApiKey, string googleMapsApiKey)
         {
             services.AddTransient<IBibleMetadataService, BibleMetadataService>();
             services.AddTransient<IContentService>(serviceProvider =>
@@ -14,6 +14,8 @@ namespace Garnet.Services
                     serviceProvider.GetRequiredService<IBibleMetadataService>(),
                     digitalBiblePlatformApiKey));
             services.AddTransient<IShortUrlService, ShortUrlService>();
+            services.AddTransient<ITimeService>(serviceProvider =>
+                new TimeService(googleMapsApiKey));
             services.AddTransient<IUserService, UserService>();
         }
     }

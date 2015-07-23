@@ -21,13 +21,15 @@ namespace Garnet.Api.Controllers
         private readonly IContentService _contentService;
         private readonly IBrowserFactory _browserFactory;
         private readonly IBibleMetadataService _bibleMetadataService;
+        private readonly ITimeService _timeService;
 
-        public TwilioVoiceController(IUserService userService, IBibleMetadataService bibleMetadataService, IContentService contentService, IBrowserFactory browserFactory)
+        public TwilioVoiceController(IUserService userService, IBibleMetadataService bibleMetadataService, IContentService contentService, IBrowserFactory browserFactory, ITimeService timeService)
         {
             _userService = userService;
             _bibleMetadataService = bibleMetadataService;
             _contentService = contentService;
             _browserFactory = browserFactory;
+            _timeService = timeService;
         }
 
         #region Start
@@ -165,6 +167,10 @@ namespace Garnet.Api.Controllers
             else if (selection == "5")
             {
                 return new TwilioRedirectResult(TwilioVoiceRoutes.ReminderTime);
+            }
+            else if (selection == "6")
+            {
+                return new TwilioRedirectResult(TwilioVoiceRoutes.LocalTime);
             }
 
             // TODO: Prevent infinite loop.
@@ -379,7 +385,7 @@ namespace Garnet.Api.Controllers
                 if (reminderTimeInMinutes != null)
                 {
                     x.AliceSay(string.Format("Your reminder is set for {0}",
-                        GetSpokenReminderTime(reminderTimeInMinutes.Value)));
+                        GetSpokenTimeOfDay(reminderTimeInMinutes.Value)));
                 }
                 x.AliceSay(@"
                     This feature is not yet implemented.
@@ -461,7 +467,7 @@ namespace Garnet.Api.Controllers
             TimeSpan timeOfDay;
             if (time.Length > 2 && TimeSpan.TryParse(time.Insert(time.Length - 2, ":"), out timeOfDay))
             {
-                var spokenTimeOfDay = GetSpokenReminderTime((int)timeOfDay.TotalMinutes, includeAmPm: false);
+                var spokenTimeOfDay = GetSpokenTimeOfDay((int)timeOfDay.TotalMinutes, includeAmPm: false);
                 return new TwilioResponseResult(x =>
                 {
                     x.BeginGather(new
@@ -519,6 +525,42 @@ namespace Garnet.Api.Controllers
 
         #endregion
 
+        #region Get Local Time
+
+        [Route(TwilioVoiceRoutes.LocalTime)]
+        [HttpGet]
+        public async Task<IActionResult> GetCallerLocalTime(
+            [FromQuery(Name = "FromCity")] string fromCity,
+            [FromQuery(Name = "FromState")] string fromState,
+            [FromQuery(Name = "FromZip")] string fromZip
+            )
+        {
+            var localTime = await _timeService.GetLocalTimeAsync(fromCity, fromState, fromZip);
+            if (localTime != null)
+            {
+                return new TwilioResponseResult(x =>
+                {
+                    x.BeginGather(new { numDigits = 1 });
+                    x.AliceSay(string.Format("Is your local time {0}?", GetSpokenTimeOfDay(localTime.Value)));
+                    x.AliceSay("If this is correct, press 1.");
+                    x.AliceSay("If this is incorrect, press 2.");
+                    x.EndGather();
+                });
+            }
+
+            // TODO: Prompt user to enter local time.
+            return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
+        }
+
+        [Route(TwilioVoiceRoutes.LocalTime)]
+        [HttpPost]
+        public IActionResult HandleCallerLocalTime()
+        {
+            return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
+        }
+
+        #endregion
+
         private static TwilioResponseResult DidNotUnderstandReminderSetResponse()
         {
             return new TwilioResponseResult(x =>
@@ -533,14 +575,18 @@ namespace Garnet.Api.Controllers
             return new TwilioResponseResult(x =>
             {
                 x.AliceSay(string.Concat("Daily reminder set for ",
-                    GetSpokenReminderTime(reminderTimeInMinutes)));
+                    GetSpokenTimeOfDay(reminderTimeInMinutes)));
                 x.Redirect(TwilioVoiceRoutes.MainMenu);
             });
         }
 
-        private static string GetSpokenReminderTime(int reminderTimeInMinutes, bool includeAmPm = true)
+        private static string GetSpokenTimeOfDay(int reminderTimeInMinutes, bool includeAmPm = true)
         {
-            var timeOfDay = TimeSpan.FromMinutes(reminderTimeInMinutes);
+            return GetSpokenTimeOfDay(TimeSpan.FromMinutes(reminderTimeInMinutes), includeAmPm);
+        }
+
+        private static string GetSpokenTimeOfDay(TimeSpan timeOfDay, bool includeAmPm = true)
+        {
             var anteMeridianOrPostMeridian = timeOfDay.TotalHours < 12 ? "A.M." : "P.M.";
             if (timeOfDay.TotalHours < 1)
             {
