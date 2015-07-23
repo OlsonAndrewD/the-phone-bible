@@ -1,7 +1,6 @@
 ﻿using Garnet.Api.ActionResults;
 using Garnet.Api.Extensions;
 using Garnet.Api.Routes;
-using Garnet.Api.TwilioRequestHandlers;
 using Garnet.Domain.Entities;
 using Garnet.Domain.Enums;
 using Garnet.Domain.Services;
@@ -105,7 +104,7 @@ namespace Garnet.Api.Controllers
             if (digits == "1")
             {
                 await AdvanceToNextContent(phoneNumber);
-                return new RedirectToCurrentContent();
+                return new RedirectToCurrentContentResult();
             }
 
             return new TwilioRedirectResult(TwilioVoiceRoutes.MainMenu);
@@ -153,7 +152,7 @@ namespace Garnet.Api.Controllers
 
             if (redirectToContent)
             {
-                return new RedirectToCurrentContent();
+                return new RedirectToCurrentContentResult();
             }
             else if (selection == "3")
             {

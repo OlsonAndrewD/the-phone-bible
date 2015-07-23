@@ -59,7 +59,7 @@ namespace Garnet.Api.TwilioRequestHandlers
                             ChapterNumber = int.Parse(selection)
                         });
                     await _userService.AddOrUpdateAsync(user);
-                    return new RedirectToCurrentContent();
+                    return new RedirectToCurrentContentResult();
                 }
             }
             return new TwilioRedirectResult();

@@ -3,9 +3,9 @@ using Garnet.Api.Routes;
 
 namespace Garnet.Api.ActionResults
 {
-    public class RedirectToCurrentContent : TwilioResponseResult
+    public class RedirectToCurrentContentResult : TwilioResponseResult
     {
-        public RedirectToCurrentContent()
+        public RedirectToCurrentContentResult()
             : base(x =>
             {
                 x.AliceSay("One moment please.");
