@@ -41,7 +41,7 @@ namespace Garnet.Api.Controllers
             return new TwilioResponseResult(x =>
             {
                 x.BeginGather(new { timeout = 1, finishOnKey = "" });
-                x.AliceSay("For main menu, press pound anytime.");
+                x.AliceSay("Hello, this is The Phone Bible.");
                 x.EndGather();
                 x.Redirect(TwilioVoiceRoutes.CurrentContent, "get");
             });
@@ -83,7 +83,8 @@ namespace Garnet.Api.Controllers
                 x.EndGather();
 
                 x.BeginGather(new { action = TwilioVoiceRoutes.NextContentRequest, timeout = 3, finishOnKey = "" });
-                x.AliceSay("To advance to the next chapter, press 1.");
+                x.AliceSay("To repeat this chapter, press 1.");
+                x.AliceSay("To advance to the next chapter, press 2.");
                 x.EndGather();
 
                 x.Redirect(TwilioVoiceRoutes.MainMenu, "get");
@@ -104,6 +105,10 @@ namespace Garnet.Api.Controllers
             [FromForm(Name = "Digits")] string digits)
         {
             if (digits == "1")
+            {
+                return new RedirectToCurrentContentResult();
+            }
+            else if (digits == "2")
             {
                 await AdvanceToNextContent(phoneNumber);
                 return new RedirectToCurrentContentResult();
@@ -132,7 +137,7 @@ namespace Garnet.Api.Controllers
                 x.AliceSay(string.Format("Press 2 to hear {0}.", nextChapter));
                 x.AliceSay("Press 3 to choose a different chapter.");
                 x.AliceSay("Press 4 to choose a translation.");
-                x.AliceSay("Press 5 to set a daily text message reminder.");
+                //x.AliceSay("Press 5 to set a daily text message reminder.");
                 x.EndGather();
                 x.Redirect(TwilioVoiceRoutes.MainMenu, "get");
             });
