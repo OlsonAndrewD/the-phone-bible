@@ -43,7 +43,7 @@ namespace Garnet.Services
                 user = await AddOrUpdateAsync(new User
                 {
                     PhoneNumber = phoneNumber,
-                    ChapterNumber = 1,
+                    ChapterNumber = 958, // Mark 1
                     AudioVolumeCode = DefaultAudioVolumeCode
                 });
             }
