@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{81842889-F0C8-4656-B5B0-A30332A89338}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BE873AEB-D44D-4102-BACB-21935F4E8382}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
+		Prebuild.ps1 = Prebuild.ps1
 	EndProjectSection
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Garnet.Api", "src\Garnet\Garnet.Api.xproj", "{8984314A-0238-4379-9926-24646D00AE7F}"
