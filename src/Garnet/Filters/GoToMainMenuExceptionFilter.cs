@@ -1,7 +1,7 @@
 ﻿using Garnet.Api.ActionResults;
-using Microsoft.AspNet.Mvc;
 using Garnet.Api.Extensions;
 using Garnet.Api.Routes;
+using Microsoft.AspNet.Mvc.Filters;
 
 namespace Garnet.Api.Filters
 {

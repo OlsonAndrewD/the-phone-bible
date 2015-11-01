@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Mvc;
+using Microsoft.Net.Http.Headers;
 using System;
 using Twilio.TwiML;
 
@@ -11,7 +12,7 @@ namespace Garnet.Api.ActionResults
             var response = new TwilioResponse();
             buildResponse(response);
             Content = response.Element.ToString();
-            ContentType = "text/xml";
+            ContentType = new MediaTypeHeaderValue("text/xml");
         }
     }
 }

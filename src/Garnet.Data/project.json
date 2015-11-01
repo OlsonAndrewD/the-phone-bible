@@ -9,8 +9,7 @@
     "dependencies": {
         "Garnet.Domain": "1.0.0-*",
         "StackExchange.Redis": "1.0.450",
-        "Microsoft.Framework.DependencyInjection.Interfaces": "1.0.0-beta4",
-        "System.Runtime": "4.0.20-beta-22816"
+        "Microsoft.Framework.DependencyInjection": "1.0.0-beta8"
     },
 
     "frameworks": {

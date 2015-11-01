@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
-using Microsoft.Framework.ConfigurationModel;
+using Microsoft.Framework.Configuration;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Garnet.DataAccess;
 using Garnet.Services;
-using Garnet.Api.TwilioRequestHandlers;
 using Microsoft.AspNet.Mvc;
 using Garnet.Api.Filters;
 
@@ -17,7 +16,7 @@ namespace Garnet.Api
 
         public Startup(IHostingEnvironment env)
         {
-            var configuration = new Configuration()
+            var configurationBuilder = new ConfigurationBuilder()
                 //.AddJsonFile("config.json")
                 .AddJsonFile("secrets.json", optional: true)
                 //.AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
@@ -30,16 +29,15 @@ namespace Garnet.Api
             //    configuration.AddUserSecrets();
             //}
 
-            configuration.AddEnvironmentVariables();
-            _configuration = configuration;
+            configurationBuilder.AddEnvironmentVariables();
+            _configuration = configurationBuilder.Build();
         }
 
         // This method gets called by a runtime.
         // Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc()
-                .Configure<MvcOptions>(options =>
+            services.AddMvc(options =>
                 {
                     options.Filters.Add(new GoToMainMenuExceptionFilter());
                 });
@@ -47,11 +45,11 @@ namespace Garnet.Api
             services.AddTransient<IBrowserFactory, BrowserFactory>();
 
             services.ConfigureApplicationServices(
-                _configuration.Get("DigitalBiblePlatform:ApiKey"), 
-                _configuration.Get("GoogleMaps:ApiKey"));
+                _configuration.Get<string>("DigitalBiblePlatform:ApiKey"), 
+                _configuration.Get<string>("GoogleMaps:ApiKey"));
 
             services.ConfigureApplicationDataAccess(
-                _configuration.Get("Redis:ConnectionString"));
+                _configuration.Get<string>("Redis:ConnectionString"));
         }
 
         // Configure is called after ConfigureServices is called.

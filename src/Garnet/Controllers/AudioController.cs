@@ -1,6 +1,5 @@
 ﻿using Garnet.Domain.Services;
 using Microsoft.AspNet.Mvc;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Garnet.Api.Controllers

@@ -5,16 +5,16 @@
     "dependencies": {
         "Garnet.Data": "1.0.0-*",
         "Garnet.Services": "1.0.0-*",
-        "Microsoft.AspNet.Mvc": "6.0.0-beta4",
-        "Microsoft.AspNet.Server.IIS": "1.0.0-beta4",
-        "Microsoft.AspNet.Server.WebListener": "1.0.0-beta4",
-        "Microsoft.AspNet.StaticFiles": "1.0.0-beta4",
-        "Microsoft.Framework.ConfigurationModel": "1.0.0-beta4",
-        "Microsoft.Framework.ConfigurationModel.Json": "1.0.0-beta4",
-        "Microsoft.Framework.Logging.Console": "1.0.0-beta4",
         "Twilio": "4.0.3",
         "Twilio.TwiML": "3.3.6",
-        "Twilio.Mvc": "3.1.15"
+        "Twilio.Mvc": "3.1.15",
+        "Microsoft.AspNet.Mvc.Core": "6.0.0-beta8",
+        "Microsoft.AspNet.Mvc.ViewFeatures": "6.0.0-beta8",
+        "Microsoft.Framework.Configuration": "1.0.0-beta8",
+        "Microsoft.Framework.Configuration.Json": "1.0.0-beta5",
+        "Microsoft.Framework.Logging.Console": "1.0.0-beta5",
+        "Microsoft.Framework.Configuration.EnvironmentVariables": "1.0.0-beta5",
+        "Microsoft.AspNet.Mvc": "6.0.0-beta8"
     },
 
     "commands": {
